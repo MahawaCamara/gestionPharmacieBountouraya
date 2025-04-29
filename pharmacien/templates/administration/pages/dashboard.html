@@ -1,0 +1,137 @@
+{% extends 'administration/base.html' %} 
+{% block content %} 
+{% load static %}
+<div class="page-inner">
+  <div
+    class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4"
+  >
+    <div>
+      <h3 class="fw-bold mb-3">Tableau de bord</h3>
+    </div>
+  </div>
+
+  <div class="row">
+
+    <div class="col-sm-6 col-md-3">
+      <div class="card card-stats card-round">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col-icon">
+              <div class="icon-big text-center icon-info bubble-shadow-small">
+                <i class="icon-briefcase"></i>
+              </div>
+            </div>
+            <div class="col col-stats ms-3 ms-sm-0">
+              <div class="numbers">
+                <p class="card-category">Totals produits</p>
+                <h4 class="card-title">1065</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+      <div class="card card-stats card-round">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col-icon">
+              <div
+                class="icon-big text-center icon-secondary bubble-shadow-small"
+              >
+                <i class="icon-calendar"></i>
+              </div>
+            </div>
+            <div class="col col-stats ms-3 ms-sm-0">
+              <div class="numbers">
+                <p class="card-category">Types de produits</p>
+                <h4 class="card-title">40</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-sm-8 col-md-6 col-lg-4">
+      <div class="card card-stats card-round">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col-icon">
+              <div class="icon-big text-center icon-success bubble-shadow-small">
+                <!-- Icône de recherche -->
+                <i class="fa fa-search" style="font-size: 48px;"></i>
+              </div>
+            </div>
+            <div class="col col-stats ms-3 ms-sm-0">
+              <div class="numbers">
+                <p class="card-category">Nombres de produits recherches</p>
+                <h4 class="card-title">40</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    
+  </div>
+
+  <div>
+    <div class="card card-round">
+      <div class="card-header">
+        <div class="card-head-row">
+          <div class="card-title">Products Statistics</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="chart-container" style="min-height: 375px">
+          <canvas id="statisticsChart"></canvas>
+        </div>
+        <div id="myChartLegend"></div>
+      </div>
+    </div>
+</div>
+</div>
+
+<!-- Chart Circle -->
+<script src="{% static '/pharmacie/assets/js/plugin/chart-circle/circles.min.js' %}"></script>
+
+<!-- Chart JS -->
+<script src="{% static '/pharmacie/assets/js/plugin/chart.js/chart.min.js' %}"></script>
+
+<!-- jQuery Vector Maps -->
+<script src="{% static '/pharmacie/assets/js/plugin/jsvectormap/jsvectormap.min.js' %}"></script>
+<script src="{% static '/pharmacie/assets/js/plugin/jsvectormap/world.js' %}"></script>
+
+<script>
+  $("#lineChart").sparkline([102, 109, 120, 99, 110, 105, 115], {
+    type: "line",
+    height: "70",
+    width: "100%",
+    lineWidth: "2",
+    lineColor: "#177dff",
+    fillColor: "rgba(23, 125, 255, 0.14)",
+  });
+
+  $("#lineChart2").sparkline([99, 125, 122, 105, 110, 124, 115], {
+    type: "line",
+    height: "70",
+    width: "100%",
+    lineWidth: "2",
+    lineColor: "#f3545d",
+    fillColor: "rgba(243, 84, 93, .14)",
+  });
+
+  $("#lineChart3").sparkline([105, 103, 123, 100, 95, 105, 115], {
+    type: "line",
+    height: "70",
+    width: "100%",
+    lineWidth: "2",
+    lineColor: "#ffa534",
+    fillColor: "rgba(255, 165, 52, .14)",
+  });
+</script>
+<script src="{% static '/pharmacie/assets/js/demo.js' %}"></script>
+<script src="{% static '/pharmacie/assets/js/plugin/chart.js/chart.min.js' %}"></script>
+{% endblock %} 
+

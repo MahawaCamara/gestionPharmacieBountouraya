@@ -1,0 +1,121 @@
+{% extends 'administration/base.html' %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'assets/css/pharmacien/pharmacienStyle.css' %}" />
+<style>
+    .form-group:nth-child(even) {
+        background-color: #f8f9fa; /* Couleur pour les lignes paires (gris clair) */
+        padding: 0.75rem;
+        border-radius: 5px;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-group:nth-child(odd) {
+        background-color: #ffffff; /* Couleur pour les lignes impaires (blanc) */
+        padding: 0.75rem;
+        border-radius: 5px;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-label {
+        font-weight: bold;
+        color: #343a40;
+        margin-bottom: 0.25rem;
+        display: block;
+    }
+
+    .form-control {
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        padding: 0.5rem 0.75rem;
+        width: 100%;
+        box-sizing: border-box;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+
+    .form-control:focus {
+        border-color: #007bff;
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    .form-text {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-top: 0.25rem;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+        padding: 0.75rem 1.25rem;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+        color: #155724;
+        padding: 0.75rem 1.25rem;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+        margin-bottom: 1rem;
+    }
+</style>
+<div class="container mt-5">
+    <div class="card shadow-lg rounded">
+        <div class="card-body p-5">
+            <h2 class="card-title text-primary mb-4"><i class="bi bi-hospital-fill me-2"></i> Ma Pharmacie</h2>
+            <form
+                method="POST"
+                enctype="multipart/form-data"
+                action="{% url 'pharmacien:my_pharmacy' %}"
+            >
+                {% csrf_token %}
+                {% if form.errors %}
+                <div class="alert alert-danger shadow-sm rounded mb-4">
+                    <strong><i class="bi bi-exclamation-triangle-fill me-2"></i> Erreurs dans le formulaire :</strong>
+                    <ul>
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                {% if form.is_valid %}
+                <div class="alert alert-success shadow-sm rounded mb-4">
+                    <strong><i class="bi bi-check-circle-fill me-2"></i> Informations enregistrées avec succès !</strong>
+                </div>
+                {% endif %}
+
+                {% for field in form %}
+                    <div class="form-group mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="text-danger small">{{ field.errors }}</div>
+                        {% endif %}
+                        {% if field.help_text %}
+                            <div class="form-text text-muted">{{ field.help_text }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <div class="d-flex gap-2">
+                    <button type="button" id="editBtn" class="btn btn-outline-primary"><i class="bi bi-pencil-fill me-2"></i> Modifier</button>
+                    <button type="submit" id="submitBtn" class="btn btn-primary" style="display: none"><i class="bi bi-save-fill me-2"></i> Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<script src="{% static 'pharmacie/assets/js/pharmacien/pharmacienScript.js' %}"></script>
+{% endblock %}

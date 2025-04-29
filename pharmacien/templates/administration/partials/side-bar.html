@@ -1,0 +1,98 @@
+{% load static %}
+
+
+<!-- Sidebar -->
+<div class="sidebar" data-background-color="dark">
+    <div class="sidebar-logo">
+        <!-- Logo Header -->
+        <div class="logo-header" data-background-color="dark">
+            <a href="{% url 'pharmacien:dashboard' %}" class="logo">
+                {% if user.is_authenticated and user.pharmacy.pharmacy_logo %}
+                <img src="{{ user.pharmacy.pharmacy_logo.url }}" alt="Logo pharmacie" height="50" alt="navbar brand"
+                class="navbar-brand rounded-circle" height="50"
+                height="50"/>
+                {% else %}
+                <img src="{% static 'pharmacie/assets/img/about.png' %}" alt="Logo par défaut" height="50" />
+                {% endif %}
+                   
+            </a>
+
+            <div class="nav-toggle">
+                <button class="btn btn-toggle toggle-sidebar">
+                    <i class="gg-menu-right"></i>
+                </button>
+                <button class="btn btn-toggle sidenav-toggler">
+                    <i class="gg-menu-left"></i>
+                </button>
+            </div>
+
+            <button class="topbar-toggler more">
+                <i class="gg-more-vertical-alt"></i>
+            </button>
+        </div>
+        <!-- End Logo Header -->
+    </div>
+
+    <div class="sidebar-wrapper scrollbar scrollbar-inner">
+        <div class="sidebar-content">
+            <ul class="nav nav-secondary">
+                <li class="nav-item {% if request.resolver_match.url_name == 'administration_dashboard' %}active{% endif %}">
+                    <a href="{% url 'pharmacien:dashboard' %}">
+                        <i class="fas fa-home"></i>
+                        <p>Tableau de bord</p>
+                    </a>
+                </li>
+
+                <li class="nav-section">
+                    <span class="sidebar-mini-icon">
+                        <i class="fa fa-ellipsis-h"></i>
+                    </span>
+                    <h4 class="text-section">Menu</h4>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{% url 'product_list' %}">
+                        <i class="fa fa-box" style="font-size: 12px;"></i>
+                        <p>Gestions des produits</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{% url 'search_history' %}">
+                        <i class="fa fa-chart-line" style="font-size: 12px;"></i>
+                        <p>Historiques des recherches</p>
+                    </a>
+                </li>
+
+                <!-- Divider -->
+                <li class="nav-section">
+                    <span class="sidebar-mini-icon">
+                        <i class="fa fa-ellipsis-h"></i>
+                    </span>
+                    <h4 class="text-section">Compte</h4>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{% url 'pharmacien:my_pharmacy' %}">
+                        <i class="icon-information"></i>
+                        <p>Ma pharmacie</p>
+                    </a>
+                </li>
+
+                <li class="nav-item {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+                    <a href="{% url 'pharmacien:profile' %}">
+                        <i class="icon-information"></i>
+                        <p>Mon profile</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <button type="button" class="btn btn-link text-light p-0" data-bs-toggle="modal" data-bs-target="#logoutConfirmationModal">
+                        <i class="icon-logout"></i>
+                        <span>Se déconnecter</span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- End Sidebar -->

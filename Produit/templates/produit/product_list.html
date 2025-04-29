@@ -1,0 +1,102 @@
+{% extends 'administration/base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'produit/css/produitStyle.css' %}" />
+{% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible alert-slide" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="container mt-5">
+    <h2 class="mb-4">Listes Des Produits</h2>
+
+    {% if produits %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover align-middle text-center">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Nom</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                        <th>Date d'expiration</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for produit in produits %}
+                        <tr class="fade-in">
+                            <td>{{ produit.name }}</td>
+                            <td>{{ produit.type }}</td>
+                            <td>{{ produit.description }}</td>
+                            <td>{{ produit.expiration_date|date:"d/m/Y" }}</td>
+                            <td>
+                                <a href="{% url 'product_detail' produit.id %}" class="btn btn-sm btn-outline-info badge-info text-white">Détails</a>
+                                <!-- Bouton Modifier qui ouvre la modale -->
+                                <button type="button" class=" text-white btn btn-sm btn-outline-warning badge-warning " data-bs-toggle="modal" data-bs-target="#editModal{{ produit.id }}">
+                                    Modifier
+                                </button>
+                                <!-- Bouton de suppression avec modal -->
+                                <!-- Bouton d'ouverture -->
+                                <button type="button" class="btn btn-sm btn-outline-danger badge-danger text-white" data-bs-toggle="modal" data-bs-target="#deleteModal{{ produit.id }}">
+                                    Supprimer
+                                </button>
+
+                                <!-- Modal -->
+                                <div class="modal fade" id="deleteModal{{ produit.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ produit.id }}" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                    <form method="POST" action="{% url 'delete_product' produit.id %}">
+                                        {% csrf_token %}
+                                        <div class="modal-header">
+                                        <h5 class="modal-title">Confirmation de suppression</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                        Êtes-vous sûr de vouloir supprimer le produit <strong>{{ produit.name }}</strong> ?
+                                        </div>
+                                        <div class="modal-footer">
+                                        <button type="submit" class="btn btn-danger">Oui, supprimer</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                        </div>
+                                    </form>
+                                    </div>
+                                </div>
+                                </div>
+
+
+                                <!-- Modal de confirmation pour modifier -->
+                                <div class="modal fade" id="editModal{{ produit.id }}" tabindex="-1" aria-labelledby="editModalLabel{{ produit.id }}" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title text-warning" id="editModalLabel{{ produit.id }}">Confirmation de modification</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Voulez-vous vraiment modifier le produit <strong>{{ produit.name }}</strong> ?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <a href="{% url 'edit_product' produit.id %}" class="btn btn-warning">Oui, modifier</a>
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">Vous n'avez encore enregistré aucun médicament.</div>
+    {% endif %}
+</div>
+<script src="{% static 'produit/js/produitScript.js' %}"></script>
+{% endblock %}

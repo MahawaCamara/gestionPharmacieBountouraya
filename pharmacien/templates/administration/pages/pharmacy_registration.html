@@ -1,0 +1,213 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enregistrement Pharmacie</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  
+  <!-- FontAwesome pour les icônes -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <link href="{% static 'pharmacie/assets/css/pharmacien/pharmacienStyle.css' %}" />
+</head>
+<body>
+  <style>
+          /* Style pour la page pharmacy_registration*/
+
+      /* Fond de la page */
+      body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+        text: center;
+      }
+
+      /* Conteneur principal réduit */
+      .container {
+        max-width: 1000px; /* Réduit la largeur du conteneur */
+        margin: 50px auto;
+        align-content: center;
+      }
+
+      /* Zone de formulaire avec fond dégradé bleu et noir */
+      .form-container {
+        padding: 30px; /* Moins d'espace à l'intérieur */
+        background: linear-gradient(to right, #1e3d58, #003366);
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .form-title {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #fff;
+        font-size: 1.5rem;
+        font-weight: bold;
+      }
+
+      .form-group {
+        position: relative;
+        margin-bottom: 15px; /* Réduit l'espace entre les champs */
+      }
+
+      .form-group label {
+        display: flex;
+        align-items: center;
+        font-weight: bold;
+        font-size: 1rem;
+        color: #fff;
+      }
+
+      .form-group label i {
+        margin-right: 8px;
+        font-size: 1.2rem;
+        color: #ccc;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 12px; /* Réduit la taille des champs */
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        font-size: 0.95rem; /* Réduit la taille du texte */
+        background-color: #f5f5f5;
+        transition: border-color 0.3s;
+      }
+
+      .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        background-color: #ffffff;
+      }
+
+      .btn-submit {
+        width: 100%;
+        background-color: #007bff;
+        border: none;
+        padding: 12px; /* Réduit le padding du bouton */
+        border-radius: 8px;
+        color: white;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      .btn-submit:hover {
+        background-color: #0056b3;
+      }
+      /* Disposition en deux colonnes */
+      @media (min-width: 768px) {
+        .row {
+          display: flex;
+          align-items: stretch;
+        }
+
+        .form-container {
+          flex: 1;
+        }
+      }
+  </style>
+  <div class="container">
+    <div class="row">
+      <!-- Formulaire à droite -->
+      <div class="col-md-6">
+        <div class="form-container">
+          <h2 class="form-title">Enregistrez Votre Pharmacie</h2>
+
+          <form action="{% url 'pharmacien:pharmacy_registration' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- Nom de la pharmacie -->
+            <div class="form-group">
+              <label for="pharmacy_name">
+                <i class="fas fa-store"></i> Nom de la Pharmacie
+              </label>
+              <input type="text" id="pharmacy_name" name="pharmacy_name" class="form-control" placeholder="Entrez le nom de votre pharmacie" required>
+            </div>
+
+            <!-- Adresse -->
+            <div class="form-group">
+              <label for="address">
+                <i class="fas fa-map-marker-alt"></i> Adresse
+              </label>
+              <input type="text" id="address" name="address" class="form-control" placeholder="Entrez l'adresse de votre pharmacie" required>
+            </div>
+
+            <!-- Numéro de téléphone -->
+            <div class="form-group">
+              <label for="phone_number">
+                <i class="fas fa-phone-alt"></i> Numéro de téléphone
+              </label>
+              <input type="tel" id="phone_number" name="phone_number" class="form-control" placeholder="Entrez le numéro de téléphone" required>
+            </div>
+
+            <!-- Email -->
+            <div class="form-group">
+              <label for="email">
+                <i class="fas fa-envelope"></i> Email
+              </label>
+              <input type="email" id="email" name="email" class="form-control" placeholder="Entrez l'email de votre pharmacie" required>
+            </div>
+
+            <!-- Horaires d'ouverture -->
+            <div class="form-group">
+              <label for="opening_hours">
+                <i class="fas fa-clock"></i> Horaires d'ouverture
+              </label>
+              <textarea id="opening_hours" name="opening_hours" class="form-control" rows="3" placeholder="Entrez les horaires d'ouverture" required></textarea>
+            </div>
+
+            <!-- Logo de la pharmacie -->
+            <div class="form-group">
+              <label for="pharmacy_logo">
+                <i class="fas fa-image"></i> Logo de la pharmacie
+              </label>
+              <input type="file" id="pharmacy_logo" name="pharmacy_logo" class="form-control" accept="image/*">
+            </div>
+
+            <!-- URL du site Web -->
+            <div class="form-group">
+              <label for="website_url">
+                <i class="fas fa-link"></i> Site Web
+              </label>
+              <input type="url" id="website_url" name="website_url" class="form-control" placeholder="Entrez l'URL de votre site Web">
+            </div>
+
+            <!-- Latitude -->
+            <div class="form-group">
+              <label for="latitude">
+                <i class="fas fa-map-marker"></i> Latitude
+              </label>
+              <input type="number" step="any" id="latitude" name="latitude" class="form-control" placeholder="Entrez la latitude de votre pharmacie">
+            </div>
+
+            <!-- Longitude -->
+            <div class="form-group">
+              <label for="longitude">
+                <i class="fas fa-map-marker"></i> Longitude
+              </label>
+              <input type="number" step="any" id="longitude" name="longitude" class="form-control" placeholder="Entrez la longitude de votre pharmacie">
+            </div>
+
+            <!-- Enregistrer -->
+            <button type="submit" class="btn-submit">Enregistrer la Pharmacie</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5 JS & Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9gyb39y6E5oaC7InA4CkDkrjFvAZ1/cKJQ0Y8gG6zxW9tx0v8W+P" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-cn7l7gDp0eyfwFfD+frpXpa7Ye4WslJ0sb7M8vnsz5OxWu2Uw4qD50A2VynXwd6h" crossorigin="anonymous"></script>
+  <script src="{% static 'pharmacie/assets/js/pharmacien/pharmacienScript.js' %}"></script>
+</body>
+</html>

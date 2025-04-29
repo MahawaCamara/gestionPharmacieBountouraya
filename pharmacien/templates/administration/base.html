@@ -1,0 +1,47 @@
+{% load static %}
+
+{% include 'administration/partials/head.html' %}
+
+<body>
+    <div class="wrapper">
+        {% include 'administration/partials/side-bar.html' %}
+
+        <div class="main-panel">
+            {% include 'administration/partials/header.html' %}
+
+            <div class="container">
+                {% block content %}
+                <!-- Contenu spécifique des autres pages ici -->
+                {% endblock %}
+            </div>
+
+            {% include 'administration/partials/footer.html' %}
+        </div>
+
+        {% include 'administration/partials/theme.html' %}
+    </div>
+
+    {% include 'administration/partials/javascript_section.html' %}
+
+    <div class="modal fade" id="logoutConfirmationModal" tabindex="-1" aria-labelledby="logoutConfirmationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logoutConfirmationModalLabel">Confirmer la déconnexion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                </div>
+                <div class="modal-body">
+                    Êtes-vous sûr de vouloir vous déconnecter ?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <form action="{% url 'pharmacien:logout' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Se déconnecter</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

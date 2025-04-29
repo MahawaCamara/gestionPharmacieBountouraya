@@ -1,0 +1,60 @@
+{% load static %}
+{% include "head.html" %}
+<body class="index-page">
+    <style>
+       .navmenu {
+         display: flex;
+         align-items: center;
+         justify-content: space-between;
+         padding: 10px;
+      }
+     
+     .navmenu ul {
+         display: flex;
+         list-style: none;
+         padding: 0;
+         margin: 0;
+     }
+     
+     .navmenu ul li {
+         margin-right: 20px;
+     }
+     
+     .top-search {
+         margin-left: auto; /* Aligne la recherche à droite */
+     }
+     
+     .top-search .input-group {
+         display: flex;
+         align-items: center;
+         border: 1px solid #ccc;
+         border-radius: 5px;
+         overflow: hidden;
+     }
+     
+     .top-search .form-control {
+         border: none;
+         padding: 5px 10px;
+     }
+     
+     .top-search .input-group-addon {
+         background: #f8f9fa;
+         padding: 5px 10px;
+         border-left: 1px solid #ccc;
+         cursor: pointer;
+     }
+     </style>
+     {% include "header.html" %}
+     <main class="main">
+        {% block contenu %}
+            
+        {% endblock %}
+     </main>
+     {% include "footer.html" %}
+      <!-- Scroll Top -->
+    <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Preloader -->
+    <div id="preloader"></div>
+    {% include "section_javascript.html" %}
+</body>   

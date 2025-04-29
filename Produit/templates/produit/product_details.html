@@ -1,0 +1,52 @@
+{% extends "administration/base.html" %}
+{% load static %}
+
+{% block content %}
+<!-- Animate.css pour les animations -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<link rel="stylesheet" href="{% static 'produit/css/produitStyle.css' %}"/>
+
+<div class="container center-page">
+  <div class="text-center animate__animated animate__fadeInDown">
+    <h2 class="mt-4">🧾 Détails du produit : <strong>{{ product.name }}</strong></h2>
+  </div>
+
+  <div class="card shadow-sm mb-4 animate__animated animate__fadeInUp w-75">
+    <div class="card-body">
+      <p><strong>🧪 Type :</strong> {{ product.type }}</p>
+      <p><strong>📄 Description :</strong><br> {{ product.description }}</p>
+      <p><strong>📅 Date d'expiration :</strong> {{ product.expiration_date }}</p>
+      <p><strong>💊 Mode d'utilisation :</strong><br> {{ product.usage_mode }}</p>
+      <p><strong>🧬 Posologie :</strong><br> {{ product.posology }}</p>
+    </div>
+  </div>
+
+  <div class="w-75 animate__animated animate__fadeInUp animate__delay-1s">
+    <h4 class="mb-3 text-center">💼 Formes disponibles</h4>
+
+    {% if product.availabilities.all %}
+      <ul class="list-group mb-4">
+        {% for availability in product.availabilities.all %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+              <strong>Forme :</strong> {{ availability.form.name }}<br>
+              <strong>Dosage :</strong> {{ availability.dosage }}<br>
+              <strong>Prix :</strong> {{ availability.price }} FCFA
+            </div>
+            <small class="text-muted">🏥 Pharmacie : {{ availability.pharmacy.username }}</small>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div class="alert alert-warning text-center">Aucune disponibilité enregistrée.</div>
+    {% endif %}
+  </div>
+   <!-- Bouton Retour -->
+   <div class="text-center mt-4 animate__animated animate__fadeInUp animate__delay-2s">
+    <a href="{% url 'product_list' %}" class="btn btn-outline-primary px-4 py-2">
+      ⬅️ Retour à la liste des produits
+    </a>
+  </div>
+</div>
+<script src="{% static 'produit/js/produitScript.js' %}"></script>
+{% endblock %}
