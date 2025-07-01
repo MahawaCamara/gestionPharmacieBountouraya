@@ -1,0 +1,34 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Carte Bancaire - Confirmation</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body, html {height: 100%;}
+    .centered-container {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #d1ecf1;
+    }
+    .card {
+      max-width: 400px;
+      width: 100%;
+      border-color: #bee5eb;
+    }
+  </style>
+</head>
+<body>
+  <div class="centered-container">
+    <div class="card shadow-sm border p-4 text-center">
+      {% include 'includes/messages.html' %}
+      <h4 class="text-info mb-4">Paiement réussi !</h4>
+      <p>Votre abonnement est activé.</p>
+      <a href="{% url 'pharmacien:pharmacy_registration' %}" class="btn btn-info">Compléter votre inscription pharmacie</a>
+    </div>
+  </div>
+</body>
+</html>

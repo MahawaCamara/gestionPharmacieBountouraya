@@ -1,8 +1,8 @@
 {% load static %}
-{% include "head.html" %}
+{% include "interfaceUtilisateur/partials/head.html" %}
 <body class="index-page">
     <style>
-       .navmenu {
+    .navmenu {
          display: flex;
          align-items: center;
          justify-content: space-between;
@@ -44,17 +44,17 @@
          cursor: pointer;
      }
      </style>
-     {% include "header.html" %}
+     {% include "interfaceUtilisateur/partials/header.html" %}
      <main class="main">
         {% block contenu %}
             
         {% endblock %}
      </main>
-     {% include "footer.html" %}
+     {% include "interfaceUtilisateur/partials/footer.html" %}
       <!-- Scroll Top -->
     <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
-  <!-- Preloader -->
-    <div id="preloader"></div>
-    {% include "section_javascript.html" %}
+    <!-- Preloader -->
+        <div id="preloader"></div>
+        {% include "interfaceUtilisateur/partials/section_javascript.html" %}
 </body>   

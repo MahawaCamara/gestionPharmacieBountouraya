@@ -1,76 +1,81 @@
 <header id="header" class="header sticky-top">
-    <div class="topbar d-flex align-items-center">
-      <div class="container d-flex justify-content-center justify-content-md-between">
-        <div class="contact-info d-flex align-items-center">
-          <i class="bi bi-envelope d-flex align-items-center"><a href="mailto:contact@example.com">contact@example.com</a></i>
-          <i class="bi bi-phone d-flex align-items-center ms-4"><span>+1 5589 55488 55</span></i>
-        </div>
-        <div class="social-links d-none d-md-flex align-items-center">
-          <a href="#" class="twitter"><i class="bi bi-twitter-x"></i></a>
-          <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
-          <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
-          <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
-        </div>
+  <!-- Topbar -->
+  <div class="topbar d-flex align-items-center" id="topbar">
+    <div
+      class="container d-flex justify-content-center justify-content-md-between"
+    >
+      <div class="contact-info d-flex align-items-center">
+        <i class="bi bi-envelope d-flex align-items-center"
+          ><a href="mailto:contact@example.com"
+            >pharmaconnect200@gmail.com</a
+          ></i
+        >
+        <i class="bi bi-phone d-flex align-items-center ms-4"
+          ><span>+224 625 70 47 40</span></i
+        >
       </div>
-    </div><!-- End Top Bar -->
-    
-    <div class="branding d-flex align-items-center">
-
-      <div class="container position-relative d-flex align-items-center justify-content-between">
-        <a href="index.html" class="logo d-flex align-items-center me-auto">
-          <!-- Uncomment the line below if you also wish to use an image logo -->
-          <!-- <img src="assets/img/logo.png" alt=""> -->
-          <h3 class="sitename">PharmaConnect</h3>
-        </a>
-
-        <nav id="navmenu" class="navmenu">
-          <ul>
-              <li><a href="#hero" class="active">Home</a></li>
-              <li><a href="#about">About</a></li>
-              <li><a href="#services">Products</a></li>
-              <li><a href="#doctors">Services</a></li>
-              <li><a href="#contact">Contact</a></li>
-              <li><a href="{% url 'pharmacien:login' %}">Nous rejoindre</a></li>
-              <li class="dropdown">
-                  <a href="#"><span>Filtrer par: </span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-                  <ul>
-                      <li><a href="#">Prix</a></li>
-                      <li class="dropdown">
-                          <a href="#"><span>Type</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-                          <ul>
-                              <li><a href="#">Nutrition</a></li>
-                              <li><a href="#">Cosmétiques</a></li>
-                          </ul>
-                      </li>
-                      <li><a href="#">Localité</a></li>
-                  </ul>
-              </li>
-          </ul>
-      
-          <!-- Barre de recherche bien placée -->
-          <div class="top-search">
-              <div class="input-group">
-                  <span class="input-group-addon"><i class="fa fa-search"></i></span>
-                  <input type="text" class="form-control" placeholder="Search">
-                  <span class="input-group-addon close-search"><i class="fa fa-times"></i></span>
-              </div>
-          </div> 
-      
-          <!-- Icône mobile -->
-          <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-          <div class="icons">
-            <a href="#" class="icons-btn d-inline-block js-search-open"><span class="icon-search"></span></a>
-            <a href="cart.html" class="icons-btn d-inline-block bag">
-              <span class="icon-shopping-bag"></span>
-              <span class="number">2</span>
-            </a>
-            <a href="#" class="site-menu-toggle js-menu-toggle ml-3 d-inline-block d-lg-none"><span
-                class="icon-menu"></span></a>
-          </div>  
-          </nav>
-
+      <div class="social-links d-none d-md-flex align-items-center">
+        <a href="#" class="twitter"><i class="bi bi-twitter-x"></i></a>
+        <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
+        <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
+        <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
       </div>
-
     </div>
+  </div>
+  <!-- End Top Bar -->
 
-  </header>
+  <div class="branding d-flex align-items-center">
+    <div
+      class="container position-relative d-flex align-items-center justify-content-between"
+    >
+      <a href="#hero" class="logo d-flex align-items-center me-auto">
+        <h3 class="sitename">PharmaConnect</h3>
+      </a>
+
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <li><a href="{% url 'home' %}#hero" class="active">Accueil</a></li>
+          <li><a href="{% url 'home' %}#about">A propos</a></li>
+          <li><a href="{% url 'home' %}#services">Produits</a></li>
+          <li><a href="{% url 'home' %}#doctors">Services</a></li>
+          <li><a href="{% url 'home' %}#contact">Contact</a></li>
+          <li><a href="{% url 'login' %}">Nous rejoindre</a></li>
+
+        <!-- Icône mobile -->
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+        <div class="icons">
+          <a href="cart.html" class="icons-btn d-inline-block bag">
+            <span class="icon-shopping-bag"></span>
+          </a>
+        </div>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Barre de recherche (remplace la topbar) -->
+  <div class="topbar-search" id="topbarSearch" style="display: none">
+    <div class="container">
+      <div class="search-container">
+        <!-- AJOUT de id="search-input" -->
+        <input
+          type="text"
+          id="search-input"
+          placeholder="Rechercher un produit"
+          class="search-input"
+        />
+        <button id="searchClose" class="search-close">
+          <i class="bi bi-x"></i>
+        </button>
+        <div
+          id="loading-spinner"
+          class="spinner-border text-primary position-absolute top-50 end-0 translate-middle-y d-none"
+          role="status"
+          style="width: 1.5rem; height: 1.5rem"
+        >
+          <span class="visually-hidden">Chargement...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="search-results" class="container mt-3"></div>
+</header>

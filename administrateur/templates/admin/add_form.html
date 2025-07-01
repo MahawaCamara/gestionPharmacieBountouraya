@@ -1,0 +1,51 @@
+{% extends 'base_admin.html' %}
+
+{% block title %}Ajouter une forme pharmaceutique{% endblock %}
+
+{% block content %}
+<h1 class="h2 text-center text-primary">
+    <i class="fa fa-plus-circle"></i> Ajouter une forme pharmaceutique
+</h1>
+
+<!-- Bloc d'affichage des messages -->
+{% if messages %}
+    <div class="alert-container">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                <strong>{{ message }}</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<!-- Bouton pour ouvrir la modale -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addFormModal">
+  Ajouter une forme pharmaceutique
+</button>
+
+<!-- Fenêtre modale -->
+<div class="modal fade" id="addFormModal" tabindex="-1" aria-labelledby="addFormModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addFormModalLabel">Ajouter une forme pharmaceutique</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Formulaire -->
+        <form method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="id_name" class="form-label">Nom de la forme pharmaceutique</label>
+                {% load custom_filters %} <!-- Chargez les filtres ici -->
+                {{ form.name|add_class:"form-control" }} <!-- Utilisez le filtre ici -->
+            </div>
+            <button type="submit" class="btn btn-primary">Ajouter</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

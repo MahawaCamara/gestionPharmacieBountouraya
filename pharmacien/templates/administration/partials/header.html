@@ -1,15 +1,16 @@
 {% load static %}
+
 <div class="main-header">
   <div class="main-header-logo">
-    <!-- Logo Header -->
     <div class="logo-header" data-background-color="dark">
-      <a href="{% url 'pharmacien:dashboard' %}" class="logo">
-        {% if user.is_authenticated and user.pharmacy.pharmacy_logo %}
-        <img src="{{ user.pharmacy.pharmacy_logo.url }}" alt="Logo pharmacie" height="50" />
+      {# Lien du logo: redirige vers le dashboard admin ou pharmacien #}
+      <a href="{% if user.is_staff or user.is_superuser %}{% url 'administrateur:dashboard' %}{% else %}{% url 'pharmacien:dashboard' %}{% endif %}" class="logo">
+        {% if user.is_authenticated and user.pharmacy and user.pharmacy.pharmacy_logo %}
+          <img src="{{ user.pharmacy.pharmacy_logo.url }}" alt="Logo pharmacie" height="50" />
         {% else %}
-        <img src="{% static 'pharmacie/assets/img/about.png' %}" alt="Logo par défaut" height="50" />
+          {# Logo par défaut pour les administrateurs ou si la pharmacie n'a pas de logo #}
+          <img src="{% static 'pharmacie/assets/img/logopharmacieBleu.jpeg' %}" alt="Logo par défaut" height="50" />
         {% endif %}
-           
       </a>
       <div class="nav-toggle">
         <button class="btn btn-toggle toggle-sidebar">
@@ -23,133 +24,121 @@
         <i class="gg-more-vertical-alt"></i>
       </button>
     </div>
-    
-    <!-- End Logo Header -->
-  </div>
+    </div>
 
-  <!-- Navbar Header -->
-  <nav
-    class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom"
-  >
+  <nav class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom">
     <div class="container-fluid">
       <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
-        <!-- Messages -->
-        <li class="nav-item topbar-icon dropdown hidden-caret">
-          <a
-            class="nav-link dropdown-toggle"
-            href="#"
-            id="messageDropdown"
-            role="button"
-            data-bs-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false"
-          >
-            <i class="fa fa-envelope"></i>
-          </a>
 
-          <ul
-            class="dropdown-menu messages-notif-box animated fadeIn"
-            aria-labelledby="messageDropdown"
-          >
+        <li class="nav-item topbar-icon dropdown hidden-caret">
+          <a class="nav-link dropdown-toggle" href="#" id="messageDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fa fa-envelope"></i>
+            {# Utilisation de la nouvelle clé du context processor pour le badge des messages #}
+            {% if my_app_messages_count > 0 %}
+              <span class="badge badge-danger" id="messages-badge">
+                {{ my_app_messages_count }}
+              </span>
+            {% endif %}
+          </a>
+          <ul class="dropdown-menu messages-notif-box animated fadeIn" aria-labelledby="messageDropdown">
             <li>
-              <div
-                class="dropdown-title d-flex justify-content-between align-items-center"
-              >
+              <div class="dropdown-title d-flex justify-content-between align-items-center">
                 Messages
-                <a href="#" class="small">Mark all as read</a>
+                <a href="#" id="mark-all-messages-read" class="small text-primary">Tout marquer comme lu</a>
               </div>
             </li>
             <li>
               <div class="message-notif-scroll scrollbar-outer">
-                <div class="notif-center">
-                  <a href="#">
-                    <div class="notif-img">
-                      <img
-                        src="{% static 'pharmacie/assets/img/jm_denis.jpg' %}"
-                        alt="Img Profile"
-                      />
-                    </div>
-                    <div class="notif-content">
-                      <span class="subject">Jimmy Denis</span>
-                      <span class="block"> How are you ? </span>
-                      <span class="time">5 minutes ago</span>
-                    </div>
-                  </a>
+                <div class="notif-center" id="messages-list">
+                  {# Affichage initial des messages non lus provenant du context processor #}
+                  {% for msg in my_app_messages_list %}
+                    {# CORRIGÉ: Utilise 'pharmacien_detail_message' #}
+                    <a href="{% url 'gestion_notifications:pharmacien_detail_message' msg.id %}" class="message-item notification-item" data-message-id="{{ msg.id }}">
+                      <div class="notif-img"><i class="fas fa-envelope"></i></div>
+                      <div class="notif-content">
+                        <span class="subject fw-bold">{{ msg.expediteur_nom }}</span>
+                        <span class="block">{{ msg.sujet|truncatechars:30 }}</span>
+                        <span class="time text-muted">{{ msg.date_envoye|timesince }} ago</span>
+                      </div>
+                    </a>
+                  {% empty %}
+                    <div class="text-center p-3 text-muted">Aucun message non lu</div>
+                  {% endfor %}
                 </div>
               </div>
             </li>
             <li>
-              <a class="see-all" href="#"
-                >Voir tous les messages<i class="fa fa-angle-right"></i
-              ></a>
+              <a class="see-all" href="{% url 'gestion_notifications:pharmacien_boite_reception' %}">
+                Voir tous les messages<i class="fa fa-angle-right"></i>
+              </a>
             </li>
           </ul>
         </li>
 
-        <!-- Notifications -->
         <li class="nav-item topbar-icon dropdown hidden-caret">
-          <a
-            class="nav-link dropdown-toggle"
-            href="#"
-            id="notifDropdown"
-            role="button"
-            data-bs-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false"
-          >
+          <a class="nav-link dropdown-toggle" href="#" id="notifDropdown" role="button" data-bs-toggle="dropdown">
             <i class="fa fa-bell"></i>
-            <span class="notification">4</span>
+            {# Utilisation de la nouvelle clé du context processor pour le badge des notifications #}
+            {% if my_app_notifications_count > 0 %}
+              <span class="notification">{{ my_app_notifications_count }}</span>
+            {% endif %}
           </a>
-          <ul
-            class="dropdown-menu notif-box animated fadeIn"
-            aria-labelledby="notifDropdown"
-          >
+          <ul class="dropdown-menu notif-box animated fadeIn" aria-labelledby="notifDropdown">
             <li>
               <div class="dropdown-title">
-                Vous avez 4 nouvelles notifications
+                Vous avez {{ my_app_notifications_count }} nouvelles notifications
               </div>
             </li>
             <li>
               <div class="notif-scroll scrollbar-outer">
-                <div class="notif-center">
-                  <a href="#">
-                    <div class="notif-icon notif-primary">
-                      <i class="fa fa-user-plus"></i>
-                    </div>
-                    <div class="notif-content">
-                      <span class="block"> New user registered </span>
-                      <span class="time">5 minutes ago</span>
-                    </div>
-                  </a>
+                <div class="notif-center" id="notifications-dropdown">
+                  {# Affichage initial des notifications non lues provenant du context processor #}
+                  {% for notif in my_app_notifications_list %}
+                    {# CORRIGÉ: Utilise 'pharmacien_detail_notification' #}
+                    <a href="{% url 'gestion_notifications:pharmacien_detail_notification' notif.id %}" class="notification-item">
+                        <div class="notif-img"><i class="fas fa-info-circle"></i></div>
+                        <div class="notif-content">
+                            <span class="subject fw-bold">{{ notif.sujet|default:"Notification" }}</span>
+                            <span class="block">{{ notif.message|truncatechars:30 }}</span>
+                            <span class="time text-muted">{{ notif.created_at|timesince }}</span>
+                        </div>
+                    </a>
+                  {% empty %}
+                    <div class="text-center p-3 text-muted">Aucune notification non lue</div>
+                  {% endfor %}
                 </div>
               </div>
             </li>
             <li>
-              <a class="see-all" href="#"
-                >Voir toutes les notifications<i class="fa fa-angle-right"></i
-              ></a>
+              {# CORRIGÉ: Le lien "Voir toutes les notifications" pointe toujours vers la liste pharmacien #}
+              <a class="see-all" href="{% url 'gestion_notifications:pharmacien_notifications_liste' %}">
+                Voir toutes les notifications<i class="fa fa-angle-right"></i>
+              </a>
             </li>
           </ul>
         </li>
-
-        <!-- Profile -->
+        
         <li class="nav-item topbar-user dropdown hidden-caret">
-          <a
-            class="dropdown-toggle profile-pic"
-            data-bs-toggle="dropdown"
-            href="#"
-            aria-expanded="false"
-          >
+          <a class="dropdown-toggle profile-pic" data-bs-toggle="dropdown" href="#" aria-expanded="false">
             <div class="avatar-sm">
-              {% if user.is_authenticated and user.pharmacy.pharmacy_logo %}
-                <img src="{{ user.pharmacy.pharmacy_logo.url }}" alt="Logo pharmacie" height="50" alt="navbar brand"
-                class="navbar-brand rounded-circle"/>
-                {% else %}
-                <img src="{% static 'pharmacie/assets/img/about.png' %}" alt="Logo par défaut" height="50" />
-                {% endif %}
+              {# Affichage du logo de pharmacie si l'utilisateur en a une, sinon un avatar par défaut #}
+              {% if user.is_authenticated and user.pharmacy and user.pharmacy.pharmacy_logo %}
+                <img src="{{ user.pharmacy.pharmacy_logo.url }}" alt="Logo pharmacie" height="50" class="navbar-brand rounded-circle"/>
+              {% else %}
+                <img src="{% static 'pharmacie/assets/img/accountbleu.jpg' %}" alt="image profile" class="avatar-img rounded"/>
+              {% endif %}
             </div>
             <span class="profile-username ms-3">
-              <span class="fw-bold ps-4">{{ request.user.username }}</span>
+              <span class="fw-bold ps-4">
+                {# Afficher le nom de la pharmacie ou le nom/email de l'utilisateur #}
+                {% if user.is_authenticated and user.pharmacy %}
+                  {{ user.pharmacy.pharmacy_name }}
+                {% elif user.is_authenticated %}
+                  {{ request.user.get_full_name|default:request.user.email }}
+                {% else %}
+                  Invité
+                {% endif %}
+              </span>
             </span>
           </a>
           <ul class="dropdown-menu dropdown-user animated fadeIn">
@@ -157,27 +146,22 @@
               <li>
                 <div class="user-box">
                   <div class="avatar-lg">
-                    <img
-                      src="{% static 'pharmacie/assets/img/ubo_logo.jpg' %}"
-                      alt="image profile"
-                      class="avatar-img rounded"
-                    />
+                    <img src="{% static 'pharmacie/assets/img/accountbleu.jpg' %}" alt="image profile" class="avatar-img rounded"/>
                   </div>
                   <div class="u-text">
-                    <h4>
-                      {{
-                      request.user.get_full_name|default:request.user.username
-                      }}
-                    </h4>
+                    <h4>{{ request.user.get_full_name|default:request.user.email }}</h4>
                     <p class="text-muted">{{ request.user.email }}</p>
                   </div>
                 </div>
               </li>
+              <li><div class="dropdown-divider"></div></li>
+              {# Lien du profil: pour pharmacien ou admin #}
               <li>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">Mon Profil</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">
+                  <a class="dropdown-item" href="{% if user.is_staff or user.is_superuser %}{% url 'administrateur:profile' %}{% else %}{% url 'pharmacien:profile' %}{% endif %}">Mon Profil</a>
+              </li>
+              <li><div class="dropdown-divider"></div></li>
+              <li>
+                <a class="dropdown-item" href="{% url 'logout' %}">
                   <span class="btn btn-danger p-2 rounded">Se déconnecter</span>
                 </a>
               </li>
@@ -187,5 +171,5 @@
       </ul>
     </div>
   </nav>
-  <!-- End Navbar -->
+
 </div>

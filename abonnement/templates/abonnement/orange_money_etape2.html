@@ -1,0 +1,45 @@
+{% extends "base_abonnement.html" %}
+
+{% block title %}Orange Money - Étape 2{% endblock %}
+
+{% block content %}
+  {% include 'includes/messages.html' %}
+  <h5 class="mb-3 text-center text-primary">Étape 2 : Montant à payer</h5>
+  <form method="post" id="etape2Form" novalidate>
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="montant" class="form-label">Montant</label>
+      <input type="number" class="form-control" name="montant" id="montant" placeholder="100000 GNF" required min="1" step="1">
+      <div class="invalid-feedback">Le montant doit être exactement 100000 GNF.</div>
+    </div>
+    <button type="submit" class="btn btn-primary w-100">Suivant</button>
+  </form>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  const form = document.getElementById('etape2Form');
+  const montantInput = document.getElementById('montant');
+
+  function isValidAmount(value) {
+    return Number(value) === 100000;
+  }
+
+  montantInput.addEventListener('input', () => {
+    if (isValidAmount(montantInput.value)) {
+      montantInput.classList.remove('is-invalid');
+      montantInput.classList.add('is-valid');
+    } else {
+      montantInput.classList.remove('is-valid');
+      montantInput.classList.remove('is-invalid');
+    }
+  });
+
+  form.addEventListener('submit', (e) => {
+    if (!isValidAmount(montantInput.value)) {
+      e.preventDefault();
+      montantInput.classList.add('is-invalid');
+    }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,114 @@
+{% load static %}
+<div class="main-header">
+  <div class="main-header-logo">
+    <div class="logo-header" data-background-color="dark">
+      <a href="{% url 'administration:dashboard_admin' %}" class="logo">
+        <img src="{% static 'administrateur/images/superviseur.jpg' %}" alt="Logo Admin" height="50" />
+      </a>
+      <div class="nav-toggle">
+        <button class="btn btn-toggle toggle-sidebar"><i class="gg-menu-right"></i></button>
+        <button class="btn btn-toggle sidenav-toggler"><i class="gg-menu-left"></i></button>
+      </div>
+      <button class="topbar-toggler more"><i class="gg-more-vertical-alt"></i></button>
+    </div>
+  </div>
+
+  <nav class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom">
+    <div class="container-fluid">
+      <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
+
+        <li class="nav-item topbar-icon dropdown hidden-caret position-relative">
+          <a class="nav-link dropdown-toggle" href="#" id="messageDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fa fa-envelope"></i>
+            {# The badge is always there, JS will manage its visibility and content #}
+            <span class="badge badge-danger" id="messages-badge" style="display: none;"></span> 
+          </a>
+          <ul class="dropdown-menu messages-notif-box animated fadeIn" aria-labelledby="messageDropdown">
+            <li>
+              <div class="dropdown-title d-flex justify-content-between align-items-center">
+                Messages
+                <a href="{% url 'gestion_notifications:admin_boite_reception' %}" class="small text-primary">Voir tous</a>
+              </div>
+            </li>
+            <li>
+              <div class="message-notif-scroll scrollbar-outer">
+                <div class="notif-center" id="messages-list">
+                  {# Content will be loaded by AJAX #}
+                  <div class="text-center p-3 text-muted">Chargement des messages...</div>
+                </div>
+              </div>
+            </li>
+            <li>
+              <a class="see-all" href="{% url 'gestion_notifications:admin_boite_reception' %}">
+                Voir tous les messages <i class="fa fa-angle-right"></i>
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        <li class="nav-item topbar-icon dropdown hidden-caret">
+          <a class="nav-link dropdown-toggle" href="#" id="notifDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fa fa-bell"></i>
+            {# Apply the same logic for the notification badge #}
+            <span class="notification" id="notifications-badge" style="display: none;"></span> 
+          </a>
+          <ul class="dropdown-menu notif-box animated fadeIn" aria-labelledby="notifDropdown">
+            <li>
+              <div class="dropdown-title" id="notifications-title">
+                {# Text will be updated by AJAX #}
+                Chargement des notifications...
+              </div>
+            </li>
+            <li>
+              <div class="notif-scroll scrollbar-outer">
+                <div class="notif-center" id="notifications-dropdown">
+                  {# Content will be loaded by AJAX #}
+                  <div class="text-center p-3 text-muted">Chargement des notifications...</div>
+                </div>
+              </div>
+            </li>
+            <li>
+              <a class="see-all" href="{% url 'gestion_notifications:admin_toutes_notifications' %}">
+                Voir toutes les notifications <i class="fa fa-angle-right"></i>
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        <li class="nav-item topbar-user dropdown hidden-caret">
+          <a class="dropdown-toggle profile-pic" data-bs-toggle="dropdown" href="#" aria-expanded="false">
+            <div class="avatar-sm ">
+              <img src="{% static 'administrateur/images/superviseur.jpg' %}" alt="Logo pharmaconnect" height="50" class="navbar-brand rounded-circle mr-4" />
+            </div>
+            <span class="profile-username ms-1">
+              <span class="fw-bold ps-4 text-primary">{{ request.user.get_full_name|default:request.user.email }}</span>
+            </span>
+          </a>
+          <ul class="dropdown-menu dropdown-user animated fadeIn">
+            <div class="dropdown-user-scroll scrollbar-outer">
+              <li>
+                <div class="user-box">
+                  <div class="avatar-lg">
+                    <img src="{% static 'administrateur/images/superviseur.jpg' %}" alt="image profile" class="avatar-img rounded"/>
+                  </div>
+                  <div class="u-text">
+                    <h4>{{ request.user.get_full_name|default:"Administrateur" }}</h4>
+                    <p class="text-primary">{{ request.user.email }}</p>
+                  </div>
+                </div>
+              </li>
+              <li><div class="dropdown-divider"></div></li>
+              <li><a class="dropdown-item" href="{% url 'administration:admin_profile' %}">Mon Profil</a></li>
+              <li><div class="dropdown-divider"></div></li>
+              <li>
+                <a class="dropdown-item" href="{% url 'logout' %}">
+                  <span class="btn btn-danger p-2 rounded">Se déconnecter</span>
+                </a>
+              </li>
+            </div>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </nav>
+</div>

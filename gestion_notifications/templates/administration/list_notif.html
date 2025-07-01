@@ -1,0 +1,15 @@
+{# notification/list_notif.html #}
+{% for notif in notifications_recentes %}
+  <a href="#" class="notification-item d-flex align-items-start py-2 px-3">
+    <div class="notif-icon me-3">
+      <i class="{{ notif.get_icon }}"></i>
+    </div>
+    <div class="notif-content">
+      <strong class="d-block">{{ notif.titre }}</strong>
+      <small class="text-muted">{{ notif.message|truncatechars:60 }}</small><br>
+      <small class="text-muted">{{ notif.date_creation|timesince }} ago</small>
+    </div>
+  </a>
+{% empty %}
+  <div class="text-center p-3 text-muted">Aucune notification</div>
+{% endfor %}

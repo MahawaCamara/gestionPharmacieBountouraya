@@ -1,0 +1,161 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+
+{% block title %}Gestion des abonnements{% endblock %}
+
+{% block content %}
+<div class="container">
+  <!-- Titre principal -->
+  <h1 class="h3 text-center text-primary my-4">
+    <i class="fa fa-credit-card me-2 fs-3"></i>Gestion des abonnements
+  </h1>
+
+  <!-- Messages -->
+  {% if messages %}
+    <div class="mb-3">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm" role="alert">
+          <i class="fa fa-info-circle me-1"></i> {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Boutons actions -->
+  <div class="d-flex justify-content-end mb-3 gap-2">
+    <a href="{% url 'administration:export_abonnements_excel' %}" class="btn btn-success btn-sm">
+      <i class="fa fa-file-excel me-1"></i>Exporter Excel
+    </a>
+    <button onclick="window.print()" class="btn btn-secondary btn-sm">
+      <i class="fa fa-print me-1"></i>Imprimer
+    </button>
+  </div>
+
+  <!-- Tableau des abonnements -->
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover text-center align-middle shadow-sm">
+      <thead class="table-light">
+        <tr>
+          <th>Pharmacien</th>
+          <th>Formule</th>
+          <th>Fin</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for abonnement in abonnements %}
+        <tr>
+          <td>{{ abonnement.user.get_full_name }}</td>
+          <td>{{ abonnement.formule.nom }}</td>
+          <td>{{ abonnement.date_expiration|date:"d/m/Y" }}</td>
+          <td>
+            {% if abonnement.est_valide %}
+              <span class="badge bg-success">Actif</span>
+            {% else %}
+              <span class="badge bg-danger">Inactif</span>
+            {% endif %}
+          </td>
+          <td class="text-center">
+  <div class="d-flex justify-content-center gap-2">
+    <!-- Voir détails -->
+    <button
+      class="btn btn-info btn-sm"
+      data-bs-toggle="modal"
+      data-bs-target="#modalDetail{{ abonnement.id }}"
+      data-bs-toggle="tooltip"
+      title="Voir les détails"
+    >
+      <i class="fa fa-eye"></i>
+    </button>
+
+    <!-- Activer / Désactiver -->
+    {% if abonnement.est_actif %}
+      <a href="{% url 'administration:toggle_abonnement' abonnement.id %}"
+         class="btn btn-success btn-sm"
+         data-bs-toggle="tooltip"
+         title="Désactiver l'abonnement">
+        <i class="fa fa-toggle-on"></i>
+      </a>
+    {% else %}
+      <a href="{% url 'administration:toggle_abonnement' abonnement.id %}"
+         class="btn btn-danger btn-sm"
+         data-bs-toggle="tooltip"
+         title="Activer l'abonnement">
+        <i class="fa fa-toggle-off"></i>
+      </a>
+    {% endif %}
+  </div>
+</td>
+
+        </tr>
+
+        <!-- Modale de détails -->
+        <div class="modal fade" id="modalDetail{{ abonnement.id }}" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow rounded-4">
+              <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                  <i class="fa fa-id-badge me-2"></i>Détail de l'abonnement
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <p><strong>Pharmacien :</strong> {{ abonnement.user.get_full_name }}</p>
+                <p><strong>Email :</strong> {{ abonnement.user.email }}</p>
+                <p><strong>Formule :</strong> {{ abonnement.formule.nom }}</p>
+                <p><strong>Prix :</strong> {{ abonnement.formule.prix|floatformat:0 }} GNF</p>
+                <p><strong>Date début :</strong> {{ abonnement.date_debut|date:"d/m/Y H:i" }}</p>
+                <p><strong>Date expiration :</strong> {{ abonnement.date_expiration|date:"d/m/Y H:i" }}</p>
+                <p><strong>Période d’essai :</strong> {{ abonnement.periode_essai|yesno:"Oui,Non" }}</p>
+                <p><strong>Statut :</strong> 
+                  {% if abonnement.est_valide %}
+                    <span class="badge bg-success">Actif</span>
+                  {% else %}
+                    <span class="badge bg-danger">Inactif</span>
+                  {% endif %}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  {% if abonnements.has_other_pages %}
+    <nav aria-label="Page navigation" class="mt-4">
+      <ul class="pagination justify-content-center">
+        {% if abonnements.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ abonnements.previous_page_number }}" aria-label="Précédent">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+        {% endif %}
+
+        {% for num in abonnements.paginator.page_range %}
+          <li class="page-item {% if abonnements.number == num %}active{% endif %}">
+            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+          </li>
+        {% endfor %}
+
+        {% if abonnements.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ abonnements.next_page_number }}" aria-label="Suivant">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
+</div>
+{% endblock %}

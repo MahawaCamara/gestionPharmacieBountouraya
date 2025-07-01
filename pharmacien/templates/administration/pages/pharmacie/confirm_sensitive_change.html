@@ -1,0 +1,11 @@
+{% extends "administration/base.html" %}
+{% block content %}
+<div class="container mt-5">
+
+    <div class="alert alert-success text-center">
+        <h4 class="alert-heading">Modification confirmée !</h4>
+        <p>Vos informations sensibles ont été mises à jour avec succès.</p>
+        <a href="{% url 'pharmacien:profile' %}" class="btn btn-primary mt-3">Retour au profil</a>
+    </div>
+</div>
+{% endblock %}

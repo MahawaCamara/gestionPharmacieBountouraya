@@ -1,0 +1,149 @@
+{% extends 'administration/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <h2 class="display-5 text-secondary fw-light mb-3">Détails du Message <i class="bi bi-chat-left-text-fill align-middle text-primary"></i></h2>
+        <p class="lead text-muted">Consultez et interagissez avec vos communications</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-9 col-md-10">
+            <div class="card shadow-lg rounded-4 border-0">
+                <div class="card-header bg-white py-4 d-flex align-items-center border-bottom border-light">
+                    <i class="bi bi-person-circle fs-3 me-3 text-primary"></i>
+                    <h4 class="card-title mb-0 fw-semibold text-dark">De: <span class="text-secondary">{{ message.expediteur_nom|default:"Inconnu" }}</span></h4>
+                </div>
+                <div class="card-body p-5">
+                    {# Section des Informations Essentielles du Message #}
+                    <div class="bg-white p-4 rounded-3 mb-5 border">
+                        <h5 class="text-primary mb-4 border-bottom pb-2 d-flex align-items-center">
+                            <i class="bi bi-clock-history me-2"></i> Aperçu rapide
+                        </h5>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <p class="mb-1 text-dark">
+                                    <strong class="text-muted me-2">Sujet:</strong>
+                                    <span class="fw-medium text-dark">{{ message.sujet }}</span>
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="mb-1 text-dark">
+                                    <strong class="text-muted me-2">Reçu le:</strong>
+                                    {{ message.date_envoye|date:"d F Y" }} à {{ message.date_envoye|date:"H:i" }}
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="mb-1 text-dark">
+                                    <strong class="text-muted me-2">Email:</strong>
+                                    {% if message.expediteur_email %}
+                                        <a href="mailto:{{ message.expediteur_email }}" class="text-decoration-none text-info fw-medium">
+                                            {{ message.expediteur_email }}
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted fst-italic">(Non fourni)</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {# Section du Contenu Détaillé du Message #}
+                    <div class="message-content-section bg-light p-4 rounded-3 border-light mb-5">
+                        <h5 class="text-primary mb-4 border-bottom pb-2 d-flex align-items-center">
+                            <i class="bi bi-chat-left-quote-fill me-2"></i> Contenu du Message
+                        </h5>
+                        <p class="text-dark line-height-lg">{{ message.corps|linebreaksbr }}</p>
+                    </div>
+
+                    <h4 class="mb-4 text-primary border-bottom pb-2 d-flex align-items-center">
+                        <i class="bi bi-reply-all-fill me-2"></i> Rédiger votre réponse
+                    </h4>
+                    {% if message.expediteur_email %}
+                        <form method="post" class="needs-validation" novalidate>
+                            {% csrf_token %}
+                            {# ITÉRATION SUR LES CHAMPS DU FORMULAIRE #}
+                            {% for field in form %}
+                                {# TRÈS IMPORTANT : Ignorer le champ 'id' et tout champ caché (hidden) s'il y en a #}
+                                {% if field.name != 'id' and not field.is_hidden %}
+                                <div class="mb-4">
+                                    <label for="{{ field.id_for_label }}" class="form-label text-secondary fw-semibold">
+                                        {% if field.name == 'sujet' %}
+                                            Sujet de votre réponse:
+                                        {% elif field.name == 'corps' %}
+                                            Votre message:
+                                        {% else %}
+                                            {# Affiche le label par défaut pour les autres champs (si d'autres existent) #}
+                                            {{ field.label }}:
+                                        {% endif %}
+                                    </label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                        <div class="form-text text-muted mt-1">{{ field.help_text }}</div>
+                                    {% endif %}
+                                    {% for error in field.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ error }}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+
+                            {# Ce bloc affiche les erreurs non-liées à un champ spécifique, si elles existent #}
+                            {% if form.non_field_errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {% for error in form.non_field_errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+
+                            <div class="d-flex justify-content-between align-items-center mt-5">
+                                <a href="{% url 'gestion_notifications:pharmacien_boite_reception' %}" class="btn btn-outline-secondary btn-lg px-4 py-2">
+                                    <i class="bi bi-arrow-left-circle-fill me-2"></i> Retour à la boîte de réception
+                                </a>
+                                <button type="submit" class="btn btn-success btn-lg px-4 py-2">
+                                    <i class="bi bi-send-fill me-2"></i> Envoyer la Réponse
+                                </button>
+                            </div>
+                        </form>
+                    {% else %}
+                        <div class="alert alert-warning d-flex align-items-center py-3" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill flex-shrink-0 me-3 fs-5"></i>
+                            <div>
+                                L'expéditeur n'a pas fourni d'adresse email. La réponse directe par email n'est pas possible.
+                            </div>
+                        </div>
+                        <div class="text-center mt-5">
+                             <a href="{% url 'gestion_notifications:pharmacien_boite_reception' %}" class="btn btn-secondary  px-4 py-2">
+                                <i class="bi bi-arrow-left-circle-fill me-2"></i> Retour à la boîte de réception
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block extra_js %}
+<script>
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
+</script>
+{% endblock extra_js %}

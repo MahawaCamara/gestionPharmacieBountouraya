@@ -1,0 +1,518 @@
+{% comment %} {% load static %}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Inscription Pharmacie</title>
+
+  <!-- Bootstrap & FontAwesome -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f8f9fa;
+    }
+
+    .container-main {
+      display: flex;
+      height: 100vh;
+      width: 100%;
+    }
+
+    .left-image, .right-form {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      overflow: hidden;
+    }
+
+    .left-image {
+      background-color: #fff;
+    }
+
+    .left-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-right: 1px solid #dee2e6;
+    }
+
+    .right-form {
+      background-color: #ffffff;
+      flex-direction: column;
+    }
+
+    h2 {
+      font-weight: bold;
+      color: #0d6efd;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 20px;
+    }
+
+    .form-row > div {
+      flex: 1;
+    }
+
+    @media (max-width: 992px) {
+      .container-main {
+        flex-direction: column;
+        height: auto;
+      }
+
+      .left-image, .right-form {
+        width: 100%;
+        height: auto;
+        border: none;
+      }
+
+      .left-image img {
+        height: 300px;
+      }
+
+      .form-row {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+{% if messages %}
+  <div class="mb-3">
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<div class="container-main">
+
+  <!-- Image à gauche -->
+  <div class="left-image">
+    <img src="{% static 'pharmacie/assets/img/pharmacie.jpg' %}" alt="Image pharmacie">
+  </div>
+
+  <!-- Formulaire à droite -->
+  <div class="right-form">
+    <h2><i class="fas fa-prescription-bottle-medical me-2"></i>Inscription de votre Pharmacie</h2>
+
+    <form method="POST" enctype="multipart/form-data" novalidate class="w-100" style="max-width: 600px;">
+      {% csrf_token %}
+
+      <!-- Ligne 1 -->
+      <div class="form-row mb-3">
+        <div>
+          <label for="id_pharmacy_name" class="form-label">Nom de la pharmacie</label>
+          <input type="text" name="pharmacy_name" id="id_pharmacy_name" class="form-control"
+                 placeholder="Nom de la pharmacie"
+                 value="{{ form.pharmacy_name.value|default_if_none:'' }}" required>
+          {% if form.pharmacy_name.errors %}
+            <div class="text-danger small">{{ form.pharmacy_name.errors }}</div>
+          {% endif %}
+        </div>
+        <div>
+          <label for="id_phone_number" class="form-label">Téléphone</label>
+          <input type="text" name="phone_number" id="id_phone_number" class="form-control"
+                 placeholder="Numéro de téléphone"
+                 value="{{ form.phone_number.value|default_if_none:'' }}" required>
+          {% if form.phone_number.errors %}
+            <div class="text-danger small">{{ form.phone_number.errors }}</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Ligne 2 -->
+      <div class="form-row mb-3">
+        <div>
+          <label for="id_address" class="form-label">Adresse</label>
+          <input type="text" name="address" id="id_address" class="form-control"
+                 placeholder="Adresse"
+                 value="{{ form.address.value|default_if_none:'' }}" required>
+          {% if form.address.errors %}
+            <div class="text-danger small">{{ form.address.errors }}</div>
+          {% endif %}
+        </div>
+        <div>
+          <label for="id_email" class="form-label">Email</label>
+          <input type="email" name="email" id="id_email" class="form-control"
+                 placeholder="Email"
+                 value="{{ form.email.value|default_if_none:'' }}" required>
+          {% if form.email.errors %}
+            <div class="text-danger small">{{ form.email.errors }}</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Heures d'ouverture -->
+      <div class="mb-3">
+        <label for="id_opening_hours" class="form-label">Heures d'ouverture</label>
+        <textarea name="opening_hours" id="id_opening_hours" class="form-control" rows="3"
+                  placeholder="Ex : 8h - 18h">{{ form.opening_hours.value|default_if_none:'' }}</textarea>
+        {% if form.opening_hours.errors %}
+          <div class="text-danger small">{{ form.opening_hours.errors }}</div>
+        {% endif %}
+      </div>
+
+      <!-- Logo + site web -->
+      <div class="form-row mb-3">
+        <div>
+          <label for="id_pharmacy_logo" class="form-label">Logo</label>
+          <input type="file" name="pharmacy_logo" id="id_pharmacy_logo" class="form-control" accept="image/*">
+          {% if form.pharmacy_logo.errors %}
+            <div class="text-danger small">{{ form.pharmacy_logo.errors }}</div>
+          {% endif %}
+        </div>
+        <div>
+          <label for="id_website_url" class="form-label">Site web (optionnel)</label>
+          <input type="url" name="website_url" id="id_website_url" class="form-control" placeholder="https://"
+                 value="{{ form.website_url.value|default_if_none:'' }}">
+          {% if form.website_url.errors %}
+            <div class="text-danger small">{{ form.website_url.errors }}</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Coordonnées GPS cachées -->
+      <input type="hidden" name="latitude" id="id_latitude" value="{{ form.latitude.value|default_if_none:'' }}">
+      <input type="hidden" name="longitude" id="id_longitude" value="{{ form.longitude.value|default_if_none:'' }}">
+
+      <!-- Bouton -->
+      <button type="submit" class="btn btn-primary w-100">Enregistrer la pharmacie</button>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> {% endcomment %}
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Inscription Pharmacie</title>
+
+  <!-- Bootstrap & FontAwesome -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f8f9fa;
+    }
+
+    .container-main {
+      display: flex;
+      height: 100vh;
+      width: 100%;
+    }
+
+    .left-image, .right-form {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      overflow: hidden;
+    }
+
+    .left-image {
+      background-color: #fff;
+    }
+
+    .left-image img {
+      max-width: 100%;
+      max-height: 100%;
+      height: auto;
+      width: auto;
+      object-fit: contain;
+      image-rendering: auto;
+      border-right: 1px solid #dee2e6;
+    }
+
+    .right-form {
+      background-color: #ffffff;
+      flex-direction: column;
+    }
+
+    h2 {
+      font-weight: bold;
+      color: #0d6efd;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 20px;
+    }
+
+    .form-row > div {
+      flex: 1;
+    }
+
+    /* Validation Bootstrap */
+    input.is-valid, textarea.is-valid {
+      border-color: #198754;
+      padding-right: calc(1.5em + 0.75rem);
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23198754' viewBox='0 0 16 16'%3e%3cpath d='M16 2l-7.5 11L4 8l1.5-1.5L8 9l6-7z'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right calc(0.375em + 0.1875rem) center;
+      background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+    }
+
+    input.is-invalid, textarea.is-invalid {
+      border-color: #dc3545;
+      padding-right: calc(1.5em + 0.75rem);
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23dc3545' viewBox='0 0 16 16'%3e%3cpath d='M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm0 11a.75.75 0 0 1-.75-.75V7.5a.75.75 0 0 1 1.5 0v3.75A.75.75 0 0 1 8 12zm0-7a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5z'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right calc(0.375em + 0.1875rem) center;
+      background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+    }
+
+    @media (max-width: 992px) {
+      .container-main {
+        flex-direction: column;
+        height: auto;
+      }
+
+      .left-image, .right-form {
+        width: 100%;
+        height: auto;
+        border: none;
+      }
+
+      .left-image img {
+        height: 300px;
+      }
+
+      .form-row {
+        flex-direction: column;
+      }
+    }
+
+    /* Prévisualisation logo */
+    #logo-preview {
+      max-width: 150px;
+      margin-top: 10px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container-main">
+
+  <!-- Image à gauche -->
+  <div class="left-image">
+    <img src="{% static 'pharmacie/assets/img/pharmacie.jpg' %}" alt="Image pharmacie">
+  </div>
+
+  <!-- Formulaire à droite -->
+  <div class="right-form">
+    <h2><i class="fas fa-prescription-bottle-medical me-2"></i>Inscription de votre Pharmacie</h2>
+
+    <form method="POST" action = "{% url 'pharmacien:pharmacy_registration' %}" enctype="multipart/form-data" novalidate class="w-100" style="max-width: 600px; ">
+      {% csrf_token %}
+
+      <!-- Ligne 1 -->
+      <div class="form-row mb-3">
+        <div>
+          <label for="id_pharmacy_name" class="form-label">Nom de la pharmacie</label>
+          <input type="text" name="pharmacy_name" id="id_pharmacy_name" class="form-control"
+                 placeholder="Nom de la pharmacie"
+                 value="{{ form.pharmacy_name.value|default_if_none:'' }}" required>
+          {% if form.pharmacy_name.errors %}
+            <div class="text-danger small">{{ form.pharmacy_name.errors }}</div>
+          {% endif %}
+        </div>
+        <div>
+          <label for="id_phone_number" class="form-label">Téléphone</label>
+          <input type="text" name="phone_number" id="id_phone_number" class="form-control"
+                 placeholder="Numéro de téléphone"
+                 value="{{ form.phone_number.value|default_if_none:'' }}" required>
+          {% if form.phone_number.errors %}
+            <div class="text-danger small">{{ form.phone_number.errors }}</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Ligne 2 -->
+      <div class="form-row mb-3">
+        <div>
+          <label for="id_address" class="form-label">Localité</label>
+          <input type="text" name="address" id="id_address" class="form-control"
+                 placeholder="Localité de la pharmacie"
+                 value="{{ form.address.value|default_if_none:'' }}" required>
+          {% if form.address.errors %}
+            <div class="text-danger small">{{ form.address.errors }}</div>
+          {% endif %}
+        </div>
+        <div>
+          <label for="id_email" class="form-label">Email</label>
+          <input type="email" name="email" id="id_email" class="form-control"
+                 placeholder="Email"
+                 value="{{ form.email.value|default_if_none:'' }}" required>
+          {% if form.email.errors %}
+            <div class="text-danger small">{{ form.email.errors }}</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Heures d'ouverture -->
+      <div class="mb-3">
+        <label for="id_opening_hours" class="form-label">Heures d'ouverture</label>
+        <textarea name="opening_hours" id="id_opening_hours" class="form-control" rows="3"
+                  placeholder="Ex : 8h - 18h">{{ form.opening_hours.value|default_if_none:'' }}</textarea>
+        {% if form.opening_hours.errors %}
+          <div class="text-danger small">{{ form.opening_hours.errors }}</div>
+        {% endif %}
+      </div>
+
+      <!-- Logo + site web -->
+      <div class="form-row mb-3">
+        <div>
+          <label for="id_pharmacy_logo" class="form-label">Logo</label>
+          <input type="file" name="pharmacy_logo" id="id_pharmacy_logo" class="form-control" accept="image/*">
+          {% if form.pharmacy_logo.errors %}
+            <div class="text-danger small">{{ form.pharmacy_logo.errors }}</div>
+          {% endif %}
+          <!-- Preview image -->
+          <img id="logo-preview" src="#" alt="Aperçu logo" style="display:none;" />
+        </div>
+        <div>
+          <label for="id_website_url" class="form-label">Site web (optionnel)</label>
+          <input type="url" name="website_url" id="id_website_url" class="form-control" placeholder="https://"
+                 value="{{ form.website_url.value|default_if_none:'' }}">
+          {% if form.website_url.errors %}
+            <div class="text-danger small">{{ form.website_url.errors }}</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Coordonnées GPS cachées -->
+      <input type="hidden" name="latitude" id="id_latitude" value="{{ form.latitude.value|default_if_none:'' }}">
+      <input type="hidden" name="longitude" id="id_longitude" value="{{ form.longitude.value|default_if_none:'' }}">
+
+      <!-- Bouton -->
+      <button type="submit" class="btn btn-primary w-100" id="submit-btn">Enregistrer la pharmacie</button>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.querySelector("form");
+    const submitBtn = document.getElementById("submit-btn");
+
+    // Champs à valider
+    const pharmacyName = document.getElementById('id_pharmacy_name');
+    const phone = document.getElementById('id_phone_number');
+    const email = document.getElementById('id_email');
+    const logoInput = document.getElementById('id_pharmacy_logo');
+    const logoPreview = document.getElementById('logo-preview');
+
+    // Validation nom pharmacie : lettres, espaces, tirets uniquement
+    function validatePharmacyName(value) {
+      const regex = /^[A-Za-zÀ-ÖØ-öø-ÿ\s\-]+$/;
+      return regex.test(value.trim());
+    }
+
+    // Validation téléphone : chiffres uniquement
+    function validatePhone(value) {
+      const regex = /^\d*$/;
+      return regex.test(value);
+    }
+
+    // Validation email basique
+    function validateEmail(value) {
+      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return regex.test(value);
+    }
+
+    // Met à jour classes valid/invalid
+    function updateValidation(field, isValid) {
+      if (isValid) {
+        field.classList.remove('is-invalid');
+        field.classList.add('is-valid');
+      } else {
+        field.classList.remove('is-valid');
+        field.classList.add('is-invalid');
+      }
+    }
+
+    // Écouteurs input pour validation live
+    pharmacyName.addEventListener('input', () => {
+      updateValidation(pharmacyName, validatePharmacyName(pharmacyName.value));
+    });
+
+    phone.addEventListener('input', () => {
+      updateValidation(phone, validatePhone(phone.value));
+    });
+
+    email.addEventListener('input', () => {
+      updateValidation(email, validateEmail(email.value));
+    });
+
+    // Prévisualisation du logo
+    logoInput.addEventListener('change', () => {
+      const file = logoInput.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          logoPreview.src = e.target.result;
+          logoPreview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      } else {
+        logoPreview.src = '#';
+        logoPreview.style.display = 'none';
+      }
+    });
+
+    // Validation finale au submit
+    form.addEventListener('submit', (e) => {
+      const isPharmacyNameValid = validatePharmacyName(pharmacyName.value);
+      const isPhoneValid = validatePhone(phone.value);
+      const isEmailValid = validateEmail(email.value);
+
+      updateValidation(pharmacyName, isPharmacyNameValid);
+      updateValidation(phone, isPhoneValid);
+      updateValidation(email, isEmailValid);
+
+      if (!isPharmacyNameValid || !isPhoneValid || !isEmailValid) {
+        e.preventDefault();
+        alert('Merci de corriger les erreurs dans le formulaire avant de soumettre.');
+        return false;
+      }
+
+      // Désactive bouton et affiche spinner
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Enregistrement...`;
+    });
+  });
+</script>
+</body>
+</html>

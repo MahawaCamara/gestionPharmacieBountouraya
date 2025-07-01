@@ -1,0 +1,133 @@
+{% extends 'base_admin.html' %}
+{% load custom_filters %}
+
+{% block title %}Gestion des Formes Pharmaceutiques{% endblock %}
+
+{% block content %}
+<h1 class="h2 text-primary text-center mb-4">
+    <i class="fa fa-cogs"></i> Gestion des Formes Pharmaceutiques
+</h1>
+
+<!-- Messages -->
+{% if messages %}
+<div class="alert-container">
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            <strong>{{ message }}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Bouton pour ouvrir la modale d'ajout -->
+<div class="mb-4 text-end">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addFormModal">
+        <i class="fa fa-plus me-1"></i> Ajouter une Forme
+    </button>
+</div>
+
+<!-- Tableau des formes -->
+<table class="table table-striped table-bordered text-center">
+    <thead>
+        <tr>
+            <th>Nom de la Forme</th>
+            <th style="width: 200px;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for form_item in page_obj %}
+        <tr>
+            <td>{{ form_item.name }}</td>
+            <td>
+                <a href="{% url 'administration:manage_forms' %}?edit_id={{ form_item.id }}" class="btn btn-outline-primary btn-sm me-2">
+                    <i class="fa fa-edit"></i>
+                </a>
+                <a href="{% url 'administration:delete_form' form_item.id %}" class="btn btn-outline-danger btn-sm">
+                    <i class="fa fa-trash"></i>
+                </a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="2">Aucune forme enregistrée.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Pagination -->
+<div class="d-flex justify-content-center my-4">
+    <nav>
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">&laquo;</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">&lsaquo;</a>
+                </li>
+            {% endif %}
+
+            <li class="page-item active">
+                <span class="page-link">{{ page_obj.number }}</span>
+            </li>
+
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">&rsaquo;</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">&raquo;</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+
+<!-- MODALE (ajout / modification) -->
+<div class="modal fade {% if is_edit or form.errors %}show{% endif %}" id="addFormModal" tabindex="-1" aria-labelledby="addFormModalLabel" aria-hidden="true" {% if is_edit or form.errors %}style="display:block;"{% endif %}>
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content shadow border-0 rounded-4 overflow-hidden">
+      <form method="POST" novalidate>
+        {% csrf_token %}
+        {% if is_edit %}
+          <input type="hidden" name="edit_id" value="{{ edit_id }}">
+        {% endif %}
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title d-flex align-items-center" id="addFormModalLabel">
+            <i class="fa fa-capsules me-2"></i>
+            {% if is_edit %}Modifier{% else %}Ajouter{% endif %} une forme pharmaceutique
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+        </div>
+        <div class="modal-body bg-light">
+          <div class="mb-3">
+            <label for="id_name" class="form-label">Nom de la forme</label>
+            {{ form.name|add_class:"form-control" }}
+            {% if form.name.errors %}
+              <div class="text-danger small mt-1">{{ form.name.errors.0 }}</div>
+            {% endif %}
+          </div>
+        </div>
+        <div class="modal-footer bg-light">
+          <button type="submit" class="btn btn-primary w-100 rounded-pill">
+            <i class="fa fa-save me-1"></i>
+            {% if is_edit %}Enregistrer{% else %}Ajouter{% endif %}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% if is_edit or form.errors %}
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const modal = new bootstrap.Modal(document.getElementById('addFormModal'));
+    modal.show();
+  });
+</script>
+{% endif %}
+
+{% endblock %}

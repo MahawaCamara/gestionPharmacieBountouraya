@@ -1,0 +1,12 @@
+{% for notif in notifications_non_lues %}
+  <a href="{% url 'gestion_notifications:pharmacien_detail_notification' notif.id %}" class="notification-item"> {# <-- CORRECTION ICI #}
+    <div class="notif-icon text-danger"><i class="fa fa-exclamation-circle"></i></div>
+    <div class="notif-content">
+      <span class="fw-bold">{{ notif.titre }}</span>
+      <p class="small">{{ notif.message|truncatechars:50 }}</p>
+      <span class="text-muted small">{{ notif.created_at|timesince }} ago</span> {# Note: Assurez-vous que 'created_at' est le bon champ de date/heure #}
+    </div>
+  </a>
+{% empty %}
+  <div class="text-center text-muted py-3">Aucune notification</div>
+{% endfor %}

@@ -1,0 +1,15 @@
+{% extends 'base_admin.html' %}
+{% block content %}
+<div class="py-4">
+  <h2 class="text-2xl font-bold mb-3">Fiche de la pharmacie : {{ pharmacy.pharmacy_name }}</h2>
+  <div class="card shadow p-4">
+    <p><strong>Nom :</strong> {{ pharmacy.pharmacy_name }}</p>
+    <p><strong>Email :</strong> {{ pharmacy.email }}</p>
+    <p><strong>Téléphone :</strong> {{ pharmacy.phone_number }}</p>
+    <p><strong>Adresse :</strong> {{ pharmacy.address }}</p>
+    <p><strong>Heures d'ouverture :</strong> {{ pharmacy.opening_hours }}</p>
+    <p><strong>Statut :</strong> {% if pharmacy.user.is_blocked %}<span class="badge bg-danger">Bloqué</span>{% else %}<span class="badge bg-success">Actif</span>{% endif %}</p>
+    <a href="{% url 'admin:pharmacy_list' %}" class="btn btn-secondary mt-3">Retour</a>
+  </div>
+</div>
+{% endblock %}

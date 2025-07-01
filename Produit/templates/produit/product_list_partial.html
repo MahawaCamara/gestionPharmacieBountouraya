@@ -1,0 +1,98 @@
+{% if produits %}
+<div class="row row-cols-1 row-cols-md-3 g-4">
+  {% for produit in produits %}
+  <div class="col">
+    <div class="card h-100 shadow-sm">
+      {% if produit.image %}
+        <img src="{{ produit.image.url }}" class="card-img-top" alt="{{ produit.name }}" />
+      {% else %}
+        <img src="#" class="card-img-top" alt="Image manquante" />
+      {% endif %}
+      <div class="card-body">
+        <h5 class="card-title">{{ produit.name }}</h5>
+        <p class="card-text text-muted mb-1"><strong>Type :</strong> {{ produit.type }}</p>
+        <p class="card-text text-muted"><strong>Expiration :</strong> {{ produit.expiration_date|date:"F Y" }}</p>
+        <p class="card-text">{{ produit.description|truncatechars:80 }}</p>
+      </div>
+      <div class="card-footer d-flex justify-content-between">
+        <a href="{% url 'product_detail' produit.id %}" class="btn btn-info btn-sm text-white">Détails</a>
+        <button class="btn btn-warning btn-sm text-white" data-bs-toggle="modal" data-bs-target="#editModal{{ produit.id }}">Modifier</button>
+        <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ produit.id }}">Supprimer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal modification -->
+  <div class="modal fade" id="editModal{{ produit.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title text-warning">Modifier le produit</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+        </div>
+        <div class="modal-body">
+          Voulez-vous modifier <strong>{{ produit.name }}</strong> ?
+        </div>
+        <div class="modal-footer">
+          <a href="{% url 'edit_product' produit.id %}" class="btn btn-warning">Oui, modifier</a>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal suppression -->
+  <div class="modal fade" id="deleteModal{{ produit.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <form method="POST" action="{% url 'delete_product' produit.id %}">
+          {% csrf_token %}
+          <div class="modal-header">
+            <h5 class="modal-title text-danger">Suppression</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+          </div>
+          <div class="modal-body">
+            Êtes-vous sûr de vouloir supprimer <strong>{{ produit.name }}</strong> ?
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-danger">Oui, supprimer</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  {% endfor %}
+</div>
+
+<!-- Pagination -->
+<nav class="mt-4">
+  <ul class="pagination justify-content-center">
+    {% if produits.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?q={{ query }}&page=1">« Première</a>
+      </li>
+      <li class="page-item">
+        <a class="page-link" href="?q={{ query }}&page={{ produits.previous_page_number }}">Précédent</a>
+      </li>
+    {% endif %}
+
+    <li class="page-item disabled">
+      <span class="page-link">Page {{ produits.number }} sur {{ produits.paginator.num_pages }}</span>
+    </li>
+
+    {% if produits.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?q={{ query }}&page={{ produits.next_page_number }}">Suivant</a>
+      </li>
+      <li class="page-item">
+        <a class="page-link" href="?q={{ query }}&page={{ produits.paginator.num_pages }}">Dernière »</a>
+      </li>
+    {% endif %}
+  </ul>
+</nav>
+
+{% else %}
+  <div class="alert alert-info">Aucun produit trouvé.</div>
+{% endif %}

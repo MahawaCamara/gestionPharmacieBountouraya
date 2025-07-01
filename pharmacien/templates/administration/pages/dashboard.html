@@ -1,137 +1,109 @@
-{% extends 'administration/base.html' %} 
-{% block content %} 
+{% extends 'administration/base.html' %}
 {% load static %}
+{% block content %}
+<!-- Mes styles personnalisés --->
+<style>
+   /*** Style appliqué au dashboard****/
+     .dashboard-title {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #0d6efd;
+    margin-bottom: 40px;
+  }
+
+  .card-custom {
+    border: none;
+    border-radius: 18px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease;
+    padding: 20px;
+    height: 100%;
+  }
+
+  .card-custom:hover {
+    transform: translateY(-4px);
+  }
+
+  .icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 28px;
+    width: 60px;
+    height: 60px;
+    color: white;
+  }
+
+  .card-category {
+    font-weight: 500;
+    color: #6c757d;
+    font-size: 0.95rem;
+  }
+
+  .card-title {
+    font-size: 26px;
+    font-weight: bold;
+    color: #343a40;
+  }
+
+  @media (max-width: 991px) {
+    .dashboard-cards > .col-md-4 {
+      margin-bottom: 20px;
+    }
+  }
+</style>
+
 <div class="page-inner">
-  <div
-    class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4"
-  >
-    <div>
-      <h3 class="fw-bold mb-3">Tableau de bord</h3>
+
+  <div class="dashboard-wrapper px-4">
+    <h2 class="dashboard-title">Tableau de bord</h2>
+
+    <div class="row dashboard-cards align-items-stretch">
+
+      <div class="col-md-4 mb-4">
+        <div class="card card-custom d-flex flex-column justify-content-center h-100">
+          <div class="d-flex align-items-center gap-3">
+            <div class="icon-wrapper bg-primary">
+              <i class="fas fa-capsules"></i>
+            </div>
+            <div>
+              <p class="card-category">Produits dans ma pharmacie</p>
+              <h4 class="card-title">{{ total_produits }}</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 mb-4">
+        <div class="card card-custom d-flex flex-column justify-content-center h-100">
+          <div class="d-flex align-items-center gap-3">
+            <div class="icon-wrapper bg-warning">
+              <i class="fas fa-tags"></i>
+            </div>
+            <div>
+              <p class="card-category">Types de produits</p>
+              <h4 class="card-title">{{ total_types_produits }}</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 mb-4">
+        <div class="card card-custom d-flex flex-column justify-content-center h-100">
+          <div class="d-flex align-items-center gap-3">
+            <div class="icon-wrapper bg-success">
+              <i class="fas fa-search"></i>
+            </div>
+            <div>
+              <p class="card-category">Recherches sur mes produits</p>
+              <h4 class="card-title">{{ total_recherches }}</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
-
-  <div class="row">
-
-    <div class="col-sm-6 col-md-3">
-      <div class="card card-stats card-round">
-        <div class="card-body">
-          <div class="row align-items-center">
-            <div class="col-icon">
-              <div class="icon-big text-center icon-info bubble-shadow-small">
-                <i class="icon-briefcase"></i>
-              </div>
-            </div>
-            <div class="col col-stats ms-3 ms-sm-0">
-              <div class="numbers">
-                <p class="card-category">Totals produits</p>
-                <h4 class="card-title">1065</h4>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col-sm-6 col-md-3">
-      <div class="card card-stats card-round">
-        <div class="card-body">
-          <div class="row align-items-center">
-            <div class="col-icon">
-              <div
-                class="icon-big text-center icon-secondary bubble-shadow-small"
-              >
-                <i class="icon-calendar"></i>
-              </div>
-            </div>
-            <div class="col col-stats ms-3 ms-sm-0">
-              <div class="numbers">
-                <p class="card-category">Types de produits</p>
-                <h4 class="card-title">40</h4>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col-12 col-sm-8 col-md-6 col-lg-4">
-      <div class="card card-stats card-round">
-        <div class="card-body">
-          <div class="row align-items-center">
-            <div class="col-icon">
-              <div class="icon-big text-center icon-success bubble-shadow-small">
-                <!-- Icône de recherche -->
-                <i class="fa fa-search" style="font-size: 48px;"></i>
-              </div>
-            </div>
-            <div class="col col-stats ms-3 ms-sm-0">
-              <div class="numbers">
-                <p class="card-category">Nombres de produits recherches</p>
-                <h4 class="card-title">40</h4>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    
-  </div>
-
-  <div>
-    <div class="card card-round">
-      <div class="card-header">
-        <div class="card-head-row">
-          <div class="card-title">Products Statistics</div>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="chart-container" style="min-height: 375px">
-          <canvas id="statisticsChart"></canvas>
-        </div>
-        <div id="myChartLegend"></div>
-      </div>
-    </div>
 </div>
-</div>
-
-<!-- Chart Circle -->
-<script src="{% static '/pharmacie/assets/js/plugin/chart-circle/circles.min.js' %}"></script>
-
-<!-- Chart JS -->
-<script src="{% static '/pharmacie/assets/js/plugin/chart.js/chart.min.js' %}"></script>
-
-<!-- jQuery Vector Maps -->
-<script src="{% static '/pharmacie/assets/js/plugin/jsvectormap/jsvectormap.min.js' %}"></script>
-<script src="{% static '/pharmacie/assets/js/plugin/jsvectormap/world.js' %}"></script>
-
-<script>
-  $("#lineChart").sparkline([102, 109, 120, 99, 110, 105, 115], {
-    type: "line",
-    height: "70",
-    width: "100%",
-    lineWidth: "2",
-    lineColor: "#177dff",
-    fillColor: "rgba(23, 125, 255, 0.14)",
-  });
-
-  $("#lineChart2").sparkline([99, 125, 122, 105, 110, 124, 115], {
-    type: "line",
-    height: "70",
-    width: "100%",
-    lineWidth: "2",
-    lineColor: "#f3545d",
-    fillColor: "rgba(243, 84, 93, .14)",
-  });
-
-  $("#lineChart3").sparkline([105, 103, 123, 100, 95, 105, 115], {
-    type: "line",
-    height: "70",
-    width: "100%",
-    lineWidth: "2",
-    lineColor: "#ffa534",
-    fillColor: "rgba(255, 165, 52, .14)",
-  });
-</script>
-<script src="{% static '/pharmacie/assets/js/demo.js' %}"></script>
-<script src="{% static '/pharmacie/assets/js/plugin/chart.js/chart.min.js' %}"></script>
-{% endblock %} 
-
+{% endblock %}

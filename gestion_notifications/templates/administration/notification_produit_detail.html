@@ -1,0 +1,9 @@
+{% extends "base_admin.html" %}
+{% block content %}
+ 
+<h2>Produit expiré : {{ produit.name }}</h2>
+<p>Pharmacie : {{ produit.pharmacy_name }}</p>
+<p>Date d'expiration : {{ produit.date_expiration|date:"d/m/Y" }}</p>
+
+<a href="{% url 'gestion_notifications:admin_toutes_notifications' %}" class="btn btn-secondary mt-3">Retour aux notifications</a>
+{% endblock %}

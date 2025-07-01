@@ -1,20 +1,29 @@
-<footer class="footer">
-  <div class="container-fluid d-flex justify-content-between">
-      <nav class="pull-left">
-          <ul class="nav">
-              <li class="nav-item">
-                  <a class="nav-link" href="#"> Licenses </a>
-              </li>
-          </ul>
-      </nav>
-      
-      <div class="copyright">
-          2024, made with <i class="fa fa-heart heart text-danger"></i> by
-          <a href="http://www.themekita.com">ThemeKita</a>
-      </div>
-      <div>
-          Distributed by
-          <a target="_blank" href="https://themewagon.com/">ThemeWagon</a>.
-      </div>
+<style>
+  html, body {
+    height: 100%;
+    margin: 0;
+  }
+  body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  main {
+    flex: 1;
+  }
+  .footer {
+    /* Optionnel : s'assurer que le footer prend bien la largeur */
+    width: 100%;
+  }
+</style>
+
+<footer class="footer bg-light border-top py-3 mt-auto">
+  <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center">
+    <div class="text-muted small mb-2 mb-md-0">
+      &copy; {{ now|date:"Y" }} <strong>PharmaConnect</strong> — Espace Pharmacien.
+    </div>
+    <div class="text-muted small">
+      Développé avec <i class="bi bi-heart-fill text-danger mx-1"></i> par <a href="#" class="text-decoration-none text-muted fw-semibold">L'équipe PharmaConnect</a>
+    </div>
   </div>
 </footer>

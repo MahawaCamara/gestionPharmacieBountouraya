@@ -1,0 +1,17 @@
+{% extends "base_admin.html" %}
+
+{% block title %}Profil Admin{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Profil Admin</h2>
+    <hr>
+    <p><strong>Nom complet :</strong> {{ user.get_full_name }}</p>
+    <p><strong>Email :</strong> {{ user.email }}</p>
+    <p><strong>Adresse :</strong> {{ user.address }}</p>
+    <p><strong>Date de création du compte :</strong> {{ user.date_joined|date:"d/m/Y H:i" }}</p>
+    <p><strong>Statut :</strong> {% if user.is_active %} Actif {% else %} Inactif {% endif %}</p>
+
+    <!-- Tu peux ajouter plus d'infos ou boutons de modification si tu veux -->
+</div>
+{% endblock %}

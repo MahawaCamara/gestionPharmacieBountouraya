@@ -1,0 +1,38 @@
+{% extends "base_admin.html" %}
+{% load static %}
+{% load widget_tweaks %}
+{% block content %}
+
+<div class="container mt-4">
+  <h2 class="mb-4">📨 Détail du message</h2>
+
+  <div class="card shadow mb-4">
+    <div class="card-header bg-primary text-white">
+      De : {{ message.expediteur_nom }} ({{ message.expediteur_email }})
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">{{ message.sujet }}</h5>
+      <p class="card-text">{{ message.corps }}</p>
+      <p class="card-text">
+        <small class="text-muted">Reçu le {{ message.date_envoye|date:"d/m/Y à H:i" }}</small>
+      </p>
+    </div>
+  </div>
+
+  <h4 class="mt-4">✏️ Répondre</h4>
+  <form method="post" class="bg-light p-4 rounded shadow-sm">
+    {% csrf_token %}
+    <div class="mb-3">
+      {{ form.sujet.label_tag }}
+      {{ form.sujet|add_class:"form-control" }}
+    </div>
+    <div class="mb-3">
+      {{ form.corps.label_tag }}
+      {{ form.corps|add_class:"form-control" }}
+    </div>
+    <button type="submit" class="btn btn-success">📤 Envoyer la réponse</button>
+  </form>
+
+  <a href="{% url 'gestion_notifications:admin_boite_reception' %}" class="btn btn-link mt-3">← Retour à la boîte de réception</a>
+</div>
+{% endblock %}

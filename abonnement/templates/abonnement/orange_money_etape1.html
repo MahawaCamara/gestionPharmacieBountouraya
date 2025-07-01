@@ -1,0 +1,45 @@
+{% extends "base_abonnement.html" %}
+
+{% block title %}Orange Money - Étape 1{% endblock %}
+
+{% block content %}
+{% include 'includes/messages.html' %}
+  <h5 class="text-center mb-4 text-primary">Étape 1 : Numéro Orange Money</h5>
+  <form method="POST" id="etape1Form" novalidate>
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="numero" class="form-label">Numéro de téléphone</label>
+      <input type="text" class="form-control" id="numero" name="numero" placeholder="Ex : 620000000" required>
+      <div class="invalid-feedback">Entrez un numéro valide de 9 chiffres.</div>
+    </div>
+    <button type="submit" class="btn btn-primary w-100">Continuer</button>
+  </form>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  // Validation JS du numéro
+  const form = document.getElementById('etape1Form');
+  const numeroInput = document.getElementById('numero');
+
+  function isValidPhoneNumber(number) {
+    return /^\d{9}$/.test(number);
+  }
+
+  numeroInput.addEventListener('input', () => {
+    if (isValidPhoneNumber(numeroInput.value)) {
+      numeroInput.classList.remove('is-invalid');
+      numeroInput.classList.add('is-valid');
+    } else {
+      numeroInput.classList.remove('is-valid');
+    }
+  });
+
+  form.addEventListener('submit', (e) => {
+    if (!isValidPhoneNumber(numeroInput.value)) {
+      e.preventDefault();
+      numeroInput.classList.add('is-invalid');
+    }
+  });
+</script>
+{% endblock %}

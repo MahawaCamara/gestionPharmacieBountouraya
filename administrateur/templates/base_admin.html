@@ -1,0 +1,320 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    {% include 'partials/head.html' %}
+</head>
+<body>
+    <div class="wrapper">
+        {% include 'partials/side-bar.html' %}
+        
+        {# --- Re-intégration du div "main-panel" pour maintenir votre design original --- #}
+        <div class="main-panel"> 
+            {% include 'partials/header.html' %}
+
+            <div class="container">
+                {# --- Bloc pour les messages Django (succès, erreur, info, etc.) --- #}
+                {% if messages %}
+                    <div class="messages-container mt-3">
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                {# --- Fin du bloc messages --- #}
+
+                {% block content %}
+                {# Le contenu spécifique de chaque page enfant sera inséré ici #}
+                {% endblock %}
+            </div>
+
+            {# --- Modale de déconnexion --- #}
+            <div class="modal fade" id="logoutConfirmationModal" tabindex="-1" aria-labelledby="logoutConfirmationModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="logoutConfirmationModalLabel">Confirmer la déconnexion</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                        </div>
+                        <div class="modal-body">
+                            Êtes-vous sûr de vouloir vous déconnecter ?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                            <form action="{% url 'logout' %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">Se déconnecter</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {# --- Fin de la modale de déconnexion --- #}
+
+            {% include 'partials/footer.html' %}
+        </div> {# --- Fin du main-panel --- #}
+
+        {% if request.path == '/admin/dashboard/' or request.path == '/pharmacien/dashboard/' %}
+            {% include 'partials/theme.html' %}
+        {% endif %}
+
+    </div> {# --- Fin du wrapper --- #}
+    
+    {% block extra_js %}
+    {# Les scripts JS spécifiques aux pages enfants peuvent être ajoutés ici #}
+    {% endblock %}
+
+    {% include 'partials/javascript_section.html' %} 
+    
+    {# Moment.js for date formatting (make sure it's loaded before your script) #}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/fr.min.js"></script>
+    <script>
+        moment.locale('fr'); // Set locale to French
+    </script>
+
+    {# --- Scripts for AJAX updates of messages and notifications in the header --- #}
+    <script>
+        $(document).ready(function() {
+            // Fonction pour mettre à jour le badge des messages
+            function updateMessageBadge() {
+                $.ajax({
+                    url : "{% url 'gestion_notifications:common_unread_messages_count' %}",
+                    type: 'GET',
+                    success: function(data) {
+                        const count = data.unread_count;
+                        const badge = $('#messages-badge');
+                        if (count > 0) {
+                            badge.text(count).show();
+                        } else {
+                            badge.hide();
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Erreur lors de la récupération du nombre de messages non lus :", error);
+                    }
+                });
+            }
+
+            // Fonction pour mettre à jour la liste déroulante des messages
+            function updateMessageList() {
+                $.ajax({
+                    url : "{% url 'gestion_notifications:common_recent_unread_messages' %}",
+                    type: 'GET',
+                    success: function(data) {
+                        const messagesList = $('#messages-list');
+                        messagesList.empty(); // Vider la liste actuelle
+                        if (data.messages.length > 0) {
+                            data.messages.forEach(function(msg) {
+                                const timeSince = moment(msg.date_envoye).fromNow();
+                                // Utilisation de l'URL dynamique pour le détail du message de l'ADMINISTRATEUR
+                                // Assurez-vous que cette URL est correcte et mène à la bonne vue pour l'ADMIN.
+                                // La ligne suivante a été corrigée pour utiliser uniquement l'URL admin_detail_message
+                                let detailUrl = "{% url 'gestion_notifications:admin_detail_message' 0 %}".replace('0', msg.id);
+                                
+                                messagesList.append(`
+                                    <a href="${detailUrl}" class="message-item notification-item" data-message-id="${msg.id}">
+                                        <div class="notif-img"><i class="fas fa-envelope"></i></div>
+                                        <div class="notif-content">
+                                            <span class="subject fw-bold">${msg.sujet.substring(0, 30)}${msg.sujet.length > 30 ? '...' : ''}</span>
+                                            <span class="block">${msg.corps.substring(0, 30)}${msg.corps.length > 30 ? '...' : ''}</span>
+                                            <span class="time text-muted">${timeSince}</span>
+                                        </div>
+                                    </a>
+                                `);
+                            });
+                        } else {
+                            messagesList.append('<div class="text-center p-3 text-muted">Aucun message non lu</div>');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Erreur lors de la récupération des messages récents :", error);
+                    }
+                });
+            }
+
+            // Fonction pour mettre à jour le badge des notifications (vue admin ou pharmacien)
+            function updateNotificationBadge() {
+                $.ajax({
+                    url : "{% url 'gestion_notifications:common_unread_notifications_count' %}", 
+                    type: 'GET',
+                    success: function(data) {
+                        const count = data.unread_count;
+                        const badge = $('#notifications-badge');
+                        if (count > 0) {
+                            badge.text(count).show();
+                            $('#notifications-title').text(`Vous avez ${count} nouvelles notifications`);
+                        } else {
+                            badge.hide();
+                            $('#notifications-title').text(`Aucune nouvelle notification`);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Erreur lors de la récupération du nombre de notifications non lues :", error);
+                    }
+                });
+            }
+
+            // Fonction pour mettre à jour la liste déroulante des notifications (vue admin ou pharmacien)
+            function updateNotificationList() {
+                $.ajax({
+                    url: "{% url 'gestion_notifications:common_recent_unread_notifications' %}", 
+                    type: 'GET',
+                    success: function(data) {
+                        const notificationsList = $('#notifications-dropdown');
+                        notificationsList.empty(); // Vider la liste actuelle
+                        if (data.notifications.length > 0) {
+                            data.notifications.forEach(function(notif) {
+                                const timeSince = moment(notif.date_creation).fromNow(); 
+                                // Utilisation de l'URL dynamique pour le détail de la notification de l'ADMINISTRATEUR (ou pharmacien)
+                                // Assurez-vous que cette URL est correcte et mène à la bonne vue.
+                                let detailUrl = "{% url 'gestion_notifications:admin_detail_notification' 0 %}".replace('0', notif.id);
+
+                                notificationsList.append(`
+                                    <a href="${detailUrl}" class="notification-item d-flex align-items-start py-2 px-3" data-notification-id="${notif.id}">
+                                        <div class="notif-icon me-3">
+                                            <i class="${notif.icon_class}"></i>
+                                        </div>
+                                        <div class="notif-content">
+                                            <strong class="d-block">${notif.titre}</strong>
+                                            <small class="text-muted">${notif.message.substring(0, 60)}${notif.message.length > 60 ? '...' : ''}</small><br>
+                                            <small class="text-muted">${timeSince}</small>
+                                        </div>
+                                    </a>
+                                `);
+                            });
+                        } else {
+                            notificationsList.append('<div class="text-center p-3 text-muted">Aucune notification</div>');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Erreur lors de la récupération des notifications récentes :", error);
+                    }
+                });
+            }
+
+            // Marquer un message comme lu via AJAX (depuis le dropdown)
+            $(document).on('click', '.message-item', function(e) {
+                e.preventDefault(); 
+                const messageId = $(this).data('message-id');
+                const messageLink = $(this).attr('href'); // Récupère le lien de la balise <a>
+
+                $.ajax({
+                    url: "{% url 'gestion_notifications:pharmacien_marquer_message_lu' 0 %}".replace('0', messageId), 
+                    type: 'POST',
+                    data: {
+                        csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val() 
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            $(`a.message-item[data-message-id="${messageId}"]`).remove();
+                            updateMessageBadge();
+                            updateMessageList();
+                            window.location.href = messageLink;
+                        } else {
+                            console.error("Erreur AJAX pour marquer le message lu:", response.message);
+                            window.location.href = messageLink;
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Erreur AJAX pour marquer le message lu:", error);
+                        window.location.href = messageLink;
+                    }
+                });
+            });
+
+            // Marquer toutes les messages comme lus via AJAX
+            $('#mark-all-messages-read').on('click', function(e) {
+                e.preventDefault();
+                $.ajax({
+                    url: "{% url 'gestion_notifications:pharmacien_marquer_tous_messages_lus' %}", 
+                    type: 'POST',
+                    data: {
+                        csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val()
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            $('#messages-list').empty().append('<div class="text-center p-3 text-muted">Aucun message non lu</div>');
+                            $('#messages-badge').hide();
+                        } else {
+                            console.error("Erreur AJAX pour marquer tous les messages lus:", response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Erreur AJAX pour marquer tous les messages lus:", error);
+                    }
+                });
+            });
+
+            // Mark a notification as read via AJAX (from the dropdown) - Make sure this is linked to your notifications dropdown
+            $(document).on('click', '.notification-item', function(e) {
+                e.preventDefault(); 
+                const notificationId = $(this).data('notification-id'); 
+                const notificationLink = $(this).attr('href'); 
+
+                $.ajax({
+                    url: "{% url 'gestion_notifications:admin_marquer_lu' 0 %}".replace('0', notificationId), 
+                    type: 'POST',
+                    data: {
+                        csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val() 
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            $(`a.notification-item[data-notification-id="${notificationId}"]`).remove();
+                            updateNotificationBadge();
+                            updateNotificationList();
+                            window.location.href = notificationLink;
+                        } else {
+                            console.error("Erreur AJAX pour marquer la notification lue:", response.message);
+                            window.location.href = notificationLink;
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Erreur AJAX pour marquer la notification lue:", error);
+                        window.location.href = notificationLink;
+                    }
+                });
+            });
+
+            // Mark all notifications as read via AJAX
+            $('#mark-all-notifications-read').on('click', function(e) { // Ensure this ID exists in your header
+                e.preventDefault();
+                $.ajax({
+                    url: "{% url 'gestion_notifications:admin_marquer_tout_lu' %}", 
+                    type: 'POST',
+                    data: {
+                        csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val()
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            $('#notifications-dropdown').empty().append('<div class="text-center p-3 text-muted">Aucune nouvelle notification</div>');
+                            $('#notifications-badge').hide();
+                        } else {
+                            console.error("Erreur AJAX pour marquer toutes les notifications lues:", response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Erreur AJAX pour marquer toutes les notifications lues:", error);
+                    }
+                });
+            });
+
+            // Initialiser les mises à jour au chargement de la page
+            updateMessageBadge();
+            updateMessageList();
+            updateNotificationBadge(); 
+            updateNotificationList(); 
+            
+            // Vous pouvez aussi configurer un intervalle pour des mises à jour régulières si nécessaire
+            // setInterval(updateMessageBadge, 60000); 
+            // setInterval(updateMessageList, 60000); 
+            // setInterval(updateNotificationBadge, 60000);
+            // setInterval(updateNotificationList, 60000);
+        });
+    </script>
+</body>
+</html>

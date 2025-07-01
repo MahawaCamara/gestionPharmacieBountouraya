@@ -1,6 +1,5 @@
 {% load static %}
 
-
 <!-- Sidebar -->
 <div class="sidebar" data-background-color="dark">
     <div class="sidebar-logo">
@@ -8,35 +7,26 @@
         <div class="logo-header" data-background-color="dark">
             <a href="{% url 'pharmacien:dashboard' %}" class="logo">
                 {% if user.is_authenticated and user.pharmacy.pharmacy_logo %}
-                <img src="{{ user.pharmacy.pharmacy_logo.url }}" alt="Logo pharmacie" height="50" alt="navbar brand"
-                class="navbar-brand rounded-circle" height="50"
-                height="50"/>
+                    <img src="{{ user.pharmacy.pharmacy_logo.url }}" alt="Logo pharmacie" class="navbar-brand rounded-circle" height="50"/>
                 {% else %}
-                <img src="{% static 'pharmacie/assets/img/about.png' %}" alt="Logo par défaut" height="50" />
+                    <img src="{% static 'pharmacie/assets/img/about.png' %}" alt="Logo par défaut" height="50" />
                 {% endif %}
-                   
             </a>
 
             <div class="nav-toggle">
-                <button class="btn btn-toggle toggle-sidebar">
-                    <i class="gg-menu-right"></i>
-                </button>
-                <button class="btn btn-toggle sidenav-toggler">
-                    <i class="gg-menu-left"></i>
-                </button>
+                <button class="btn btn-toggle toggle-sidebar"><i class="gg-menu-right"></i></button>
+                <button class="btn btn-toggle sidenav-toggler"><i class="gg-menu-left"></i></button>
             </div>
 
-            <button class="topbar-toggler more">
-                <i class="gg-more-vertical-alt"></i>
-            </button>
+            <button class="topbar-toggler more"><i class="gg-more-vertical-alt"></i></button>
         </div>
-        <!-- End Logo Header -->
     </div>
 
     <div class="sidebar-wrapper scrollbar scrollbar-inner">
         <div class="sidebar-content">
             <ul class="nav nav-secondary">
-                <li class="nav-item {% if request.resolver_match.url_name == 'administration_dashboard' %}active{% endif %}">
+
+                <li class="nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
                     <a href="{% url 'pharmacien:dashboard' %}">
                         <i class="fas fa-home"></i>
                         <p>Tableau de bord</p>
@@ -50,7 +40,7 @@
                     <h4 class="text-section">Menu</h4>
                 </li>
 
-                <li class="nav-item">
+                <li class="nav-item {% if request.resolver_match.url_name == 'product_list' %}active{% endif %}">
                     <a href="{% url 'product_list' %}">
                         <i class="fa fa-box" style="font-size: 12px;"></i>
                         <p>Gestions des produits</p>
@@ -58,13 +48,21 @@
                 </li>
 
                 <li class="nav-item">
+                    <a href="{% url 'gestion_notifications:pharmacien_boite_reception' %}" class="nav-link">
+                        <i class="fa fa-inbox"></i> {# Icône Font Awesome pour boîte de réception #}
+                        {# Ou si vous utilisez Bootstrap Icons: <i class="bi bi-inbox"></i> #}
+                        {# Ou si votre thème a ses propres icônes, vérifiez leur préfixe et nom. #}
+                        <p>Boîte de Réception</p>
+                    </a>
+                </li>
+                
+                <li class="nav-item {% if request.resolver_match.url_name == 'search_history' %}active{% endif %}">
                     <a href="{% url 'search_history' %}">
                         <i class="fa fa-chart-line" style="font-size: 12px;"></i>
                         <p>Historiques des recherches</p>
                     </a>
                 </li>
 
-                <!-- Divider -->
                 <li class="nav-section">
                     <span class="sidebar-mini-icon">
                         <i class="fa fa-ellipsis-h"></i>
@@ -72,7 +70,7 @@
                     <h4 class="text-section">Compte</h4>
                 </li>
 
-                <li class="nav-item">
+                <li class="nav-item {% if request.resolver_match.url_name == 'my_pharmacy' %}active{% endif %}">
                     <a href="{% url 'pharmacien:my_pharmacy' %}">
                         <i class="icon-information"></i>
                         <p>Ma pharmacie</p>
@@ -85,9 +83,10 @@
                         <p>Mon profile</p>
                     </a>
                 </li>
+
                 <li class="nav-item">
-                    <button type="button" class="btn btn-link text-light p-0" data-bs-toggle="modal" data-bs-target="#logoutConfirmationModal">
-                        <i class="icon-logout"></i>
+                    <button type="button" class="btn btn-danger btn-lg d-flex align-items-center justify-content-center fw-semibold px-4 py-2 rounded-pill shadow-sm" data-bs-toggle="modal" data-bs-target="#logoutConfirmationModal">
+                        <i class="bi bi-box-arrow-right me-2 fs-5"></i>
                         <span>Se déconnecter</span>
                     </button>
                 </li>

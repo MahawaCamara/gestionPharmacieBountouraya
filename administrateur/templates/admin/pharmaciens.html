@@ -1,0 +1,118 @@
+{% extends 'base_admin.html' %}
+
+{% block title %}Gestion des pharmacies{% endblock %}
+
+{% block content %}
+<br>
+<h1 class="h2 text-primary text-center m-2">
+    <i class="fa fa-hospital"></i> Gestion des pharmacies
+</h1>
+<br>
+
+{% if messages %}
+<div class="alert-container">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        <strong>{{ message }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Barre de recherche -->
+<form method="GET" class="mb-3">
+  <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center">
+    <div class="input-group flex-grow-1" style="min-width: 300px;">
+      <span class="input-group-text"><i class="fa fa-search"></i></span>
+      <input type="text" class="form-control" name="search" placeholder="Rechercher..." value="{{ search_term }}">
+      <select class="form-select" name="filter_by" style="max-width: 160px;">
+        <option value="">Filtrer par</option>
+        <option value="pharmacy_name" {% if filter_by == "pharmacy_name" %}selected{% endif %}>Nom</option>
+        <option value="address" {% if filter_by == "address" %}selected{% endif %}>Adresse</option>
+        <option value="status" {% if filter_by == "status" %}selected{% endif %}>Statut</option>
+      </select>
+      <button class="btn btn-primary" type="submit">Filtrer</button>
+    </div>
+  </div>
+</form>
+
+<!-- Boutons Export & Imprimer alignés à droite -->
+  <div class="d-flex justify-content-end mb-3 gap-2">
+    <a href="{% url 'administration:export_pharmacies_excel' %}" class="btn btn-success btn-sm">
+      <i class="fa fa-file-excel me-1"></i>Exporter Excel
+    </a>
+    <button onclick="window.print()" class="btn btn-secondary btn-sm">
+      <i class="fa fa-print me-1"></i>Imprimer
+    </button>
+  </div>
+
+<!-- Tableau sans scroll horizontal -->
+<div class="table-responsive">
+  <table class="table table-bordered table-hover align-middle text-center w-100">
+    <thead class="table-light">
+      <tr>
+        <th style="width: 18%;">Nom</th>
+        <th style="width: 20%;">Adresse</th>
+        <th style="width: 15%;">Téléphone</th>
+        <th style="width: 20%;">Email</th>
+        <th style="width: 10%;">Statut</th>
+        <th style="width: 17%;">Actions</th> <!-- Largeur augmentée -->
+      </tr>
+    </thead>
+    <tbody>
+      {% for pharmacy in page_obj %}
+      <tr class="{% if not pharmacy.user.is_active %}table-danger{% endif %}">
+        <td>{{ pharmacy.pharmacy_name }}</td>
+        <td>{{ pharmacy.address }}</td>
+        <td>{{ pharmacy.phone_number }}</td>
+        <td>{{ pharmacy.email }}</td>
+        <td>
+          {% if pharmacy.is_approved %}
+          <span class="badge bg-success">Approuvée</span>
+          {% else %}
+          <span class="badge bg-danger">Non approuvée</span>
+          {% endif %}
+        </td>
+        <td style="white-space: nowrap;">  
+          {% if pharmacy.is_approved %}
+          <a href="{% url 'administration:approve_pharmacy' pharmacy.id %}" class="btn btn-warning btn-sm" title="Désapprouver">
+            <i class="fa fa-ban"></i>
+          </a>
+          {% else %}
+          <a href="{% url 'administration:approve_pharmacy' pharmacy.id %}" class="btn btn-primary btn-sm" title="Approuver">
+            <i class="fa fa-check"></i>
+          </a>
+          {% endif %}
+          
+          <a href="{% url 'administration:delete_pharmacy' pharmacy.id %}" class="btn btn-danger btn-sm" title="Supprimer"
+             onclick="return confirm('Voulez-vous vraiment supprimer cette pharmacie ?')">
+            <i class="fa fa-trash"></i>
+          </a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="6">Aucune pharmacie trouvée.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Pagination -->
+<div class="d-flex justify-content-center my-4">
+  <div class="pagination-controls">
+    {% if page_obj.has_previous %}
+      <a href="?page=1&search={{ search_term }}&filter_by={{ filter_by }}" class="btn btn-outline-primary btn-sm">Première</a>
+      <a href="?page={{ page_obj.previous_page_number }}&search={{ search_term }}&filter_by={{ filter_by }}" class="btn btn-outline-primary btn-sm">Précédente</a>
+    {% endif %}
+    <span class="mx-2 text-primary">Page {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}&search={{ search_term }}&filter_by={{ filter_by }}" class="btn btn-outline-primary btn-sm">Suivante</a>
+      <a href="?page={{ page_obj.paginator.num_pages }}&search={{ search_term }}&filter_by={{ filter_by }}" class="btn btn-outline-primary btn-sm">Dernière</a>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

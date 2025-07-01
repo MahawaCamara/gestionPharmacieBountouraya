@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Erreur 404 - Page non trouvée</title>
+  <style>
+    /* Reset minimal */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f9f9f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: #444;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 360px;
+      padding: 20px 15px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      background: white;
+    }
+
+    img {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 15px;
+      user-select: none;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      color: #e74c3c;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+
+    a.button {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #3498db;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: background-color 0.3s ease;
+    }
+
+    a.button:hover {
+      background-color: #2980b9;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        max-width: 90%;
+        padding: 15px 10px;
+      }
+
+      img {
+        width: 60px;
+        height: 60px;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      p {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="https://cdn-icons-png.flaticon.com/512/564/564619.png" alt="Erreur 404" />
+    <h1>Oops ! Page introuvable</h1>
+    <p>La page que vous cherchez n'existe pas ou a été déplacée.</p>
+    <a href="{% url 'home' %}" class="button">Retour à l'accueil</a>
+  </div>
+</body>
+</html>

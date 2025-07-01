@@ -4,7 +4,9 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import SetPasswordForm as DjangoSetPasswordForm
-
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.contrib.auth.forms import SetPasswordForm
 User = get_user_model()
 
 class CustomUserCreationForm(UserCreationForm):
@@ -67,33 +69,35 @@ class PharmacyForm(forms.ModelForm):
         model = Pharmacy
         fields = ['pharmacy_name', 'address', 'phone_number', 'email', 'opening_hours', 'pharmacy_logo', 'website_url']
         widgets = {
-            'pharmacy_name': forms.TextInput(attrs={
+            'Nom de la pharmacie': forms.TextInput(attrs={
                 'class': 'form-control form-control-lg',
                 'placeholder': 'Nom de la pharmacie'
             }),
-            'address': forms.TextInput(attrs={
+            'Localité': forms.TextInput(attrs={
                 'class': 'form-control form-control-lg',
                 'placeholder': 'Adresse de la pharmacie'
             }),
-            'phone_number': forms.TextInput(attrs={
+            'Numéro': forms.TextInput(attrs={
                 'class': 'form-control form-control-lg',
                 'placeholder': 'Numéro de téléphone'
             }),
-            'email': forms.EmailInput(attrs={
+            'Email': forms.EmailInput(attrs={
                 'class': 'form-control form-control-lg',
                 'placeholder': 'Adresse email'
             }),
-            'opening_hours': forms.Textarea(attrs={
+            'Heure d\'ouverture': forms.Textarea(attrs={
                 'class': 'form-control form-control-lg',
                 'placeholder': 'Heures d\'ouverture',
-                'rows': 3,  # Définit une hauteur de base
+                'rows': 1,  # Définit une hauteur de base
                 'style': 'resize: none;'  # Empêche l'utilisateur de redimensionner manuellement
             }),
-            'pharmacy_logo': forms.ClearableFileInput(attrs={
+            'Logo de la pharmacie': forms.ClearableFileInput(attrs={
                 'class': 'form-control form-control-lg',
-                'placeholder': 'Logo de la pharmacie'
+                'accept': 'image/*',
+                'onchange': 'previewLogo(this)',  # déclencheur JS
             }),
-            'website_url': forms.URLInput(attrs={
+
+            'Site-web': forms.URLInput(attrs={
                 'class': 'form-control form-control-lg',
                 'placeholder': 'URL du site web'
             }),
@@ -101,12 +105,9 @@ class PharmacyForm(forms.ModelForm):
 
     # Champ caché pour latitude et longitude (non visible dans le formulaire)
     latitude = forms.DecimalField(widget=forms.HiddenInput(), required=False)
+    
     longitude = forms.DecimalField(widget=forms.HiddenInput(), required=False)
-
-
-from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
-
+    
 class UpdateEmailForm(forms.Form):
     email = forms.EmailField(label='Nouvelle adresse email')
 
@@ -124,3 +125,30 @@ class UpdateEmailForm(forms.Form):
         self.user.email = self.cleaned_data['email']
         self.user.save()
         return self.user
+
+# Nouveau formulaire de contact public
+class ContactPharmacienForm(forms.Form):
+    nom = forms.CharField(max_length=100, label="Votre Nom")
+    email = forms.EmailField(label="Votre Email")
+    message = forms.CharField(widget=forms.Textarea, label="Votre Message")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'
+            
+#### Class pour pour la modification d'email
+User = get_user_model()
+
+class SensitiveChangeForm(SetPasswordForm):
+    email = forms.EmailField(label="Nouvelle adresse email", required=True)
+    class Meta:
+        model = User
+        fields = ['email', 'new_password1', 'new_password2']
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.email = self.cleaned_data['email']
+        if commit:
+            user.save()
+        return user

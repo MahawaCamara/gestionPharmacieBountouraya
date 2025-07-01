@@ -1,0 +1,227 @@
+{% extends 'administration/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+
+    <div class="text-center mb-4 text-primary">
+        <h2 class="mb-0">📥 Boîte de réception</h2>
+        {% if user_role_display %}
+        <p class="text-muted mt-2"><strong>Vous visualisez tous les messages</strong></p>
+        {% endif %}
+    </div>
+
+
+    {% if messages_recus %}
+    <div class="d-flex justify-content-end my-3">
+        <button id="mark-all-read-btn" class="btn btn-sm btn-outline-primary">
+            Tout marquer comme lu
+        </button>
+    </div>
+
+    <div class="messages-list">
+        {% for msg_item in messages_recus %}
+        <div class="card mb-3 shadow-sm rounded-3 {% if not msg_item.est_lu %}border-warning{% else %}border-light{% endif %}">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="card-title mb-0">
+                        <a href="{% url 'gestion_notifications:pharmacien_detail_message' msg_item.id %}" class="text-decoration-none {% if not msg_item.est_lu %}text-dark fw-bold{% else %}text-secondary{% endif %}">
+                            {{ msg_item.sujet }}
+                        </a>
+                    </h5>
+                    <div class="message-status">
+                        {% if msg_item.est_lu %}
+                        <span class="badge bg-success rounded-pill">Lu</span>
+                        {% else %}
+                        <span class="badge bg-danger rounded-pill">Non lu</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <h6 class="card-subtitle mb-2 text-muted">
+                    👤 {{ msg_item.expediteur_nom }}
+                    {% if msg_item.expediteur_email %}
+                    <br> ✉️ <a href="mailto:{{ msg_item.expediteur_email }}" class="text-decoration-none">{{ msg_item.expediteur_email }}</a>
+                    {% else %}
+                    <br> ✉️ (Email non fourni)
+                    {% endif %}
+                </h6>
+
+                <p class="card-text text-truncate">{{ msg_item.corps|truncatechars:150 }}</p> {# Increased truncate to 150 for better preview #}
+                <small class="text-muted d-block mb-3">Envoyé le {{ msg_item.date_envoye|date:"d/m/Y H:i" }}</small>
+
+                <div class="d-flex justify-content-end gap-2">
+                    {% if not msg_item.est_lu %}
+                    <button class="btn btn-sm btn-outline-success mark-read-btn" data-id="{{ msg_item.id }}">
+                        ✅ Marquer comme lu
+                    </button>
+                    {% endif %}
+                    <a href="{% url 'gestion_notifications:pharmacien_detail_message' msg_item.id %}" class="btn btn-sm btn-info">
+                        👁️ Voir & Répondre
+                    </a>
+                    <form action="{% url 'gestion_notifications:pharmacien_supprimer_message' msg_item.id %}" method="post" class="delete-form" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm">
+                            🗑️ Supprimer
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {# Pagination #}
+    <nav>
+        <ul class="pagination justify-content-center">
+            {% if messages_recus.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ messages_recus.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">« Précédent</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">« Précédent</span>
+            </li>
+            {% endif %}
+
+            {% for num in messages_recus.paginator.page_range %}
+            <li class="page-item {% if messages_recus.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}">{{ num }}</a>
+            </li>
+            {% endfor %}
+
+            {% if messages_recus.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ messages_recus.next_page_number }}{% if query %}&q={{ query }}{% endif %}">Suivant »</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">Suivant »</span>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    {% else %}
+    <div class="alert alert-info text-center">
+        <p class="mb-0">Aucun message reçu pour le moment.</p>
+        {% if query %}
+            <p class="mb-0">Aucun message ne correspond à votre recherche "{{ query }}".</p>
+            <a href="{% url 'gestion_notifications:pharmacien_boite_reception' %}" class="btn btn-sm btn-outline-info mt-2">Afficher tous les messages</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+{% endblock content %}
+
+{# DÉBUT du bloc JavaScript #}
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> {# Inclure SweetAlert2 si ce n'est pas déjà dans base.html #}
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+            const cookies = document.cookie.split(";");
+            for (let cookie of cookies) {
+                cookie = cookie.trim();
+                if (cookie.startsWith(name + "=")) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie("csrftoken");
+
+    // Get the base URL for marking a single message as read
+    // We use a placeholder '0' which will be replaced by the actual message ID in JS.
+    const markMessageReadBaseUrl = "{% url 'gestion_notifications:pharmacien_marquer_message_lu' 0 %}";
+
+    // --- Logique pour "Marquer comme lu" individuel ---
+    document.querySelectorAll(".mark-read-btn").forEach((btn) => {
+        btn.addEventListener("click", (event) => {
+            event.preventDefault();
+            const messageId = btn.dataset.id; // Get the message ID from data-id attribute
+            const messageUrl = markMessageReadBaseUrl.replace('0', messageId); // Construct the full URL
+
+            fetch(messageUrl, {
+                method: "POST",
+                headers: { "X-CSRFToken": csrftoken },
+            })
+            .then((res) => {
+                if (!res.ok) {
+                    return res.text().then(text => { throw new Error(`HTTP error! Status: ${res.status}, Body: ${text}`) });
+                }
+                return res.json();
+            })
+            .then((data) => {
+                if (data.status === "success") {
+                    location.reload();
+                } else {
+                    console.error("Erreur lors du marquage comme lu:", data.message);
+                    Swal.fire('Erreur!', data.message, 'error');
+                }
+            })
+            .catch((error) => {
+                console.error("Erreur réseau ou du serveur (individual mark read):", error);
+                Swal.fire('Erreur de connexion!', 'Une erreur est survenue lors de la communication avec le serveur. Veuillez réessayer.', 'error');
+            });
+        });
+    });
+
+    // --- Logique pour "Tout marquer comme lu" ---
+    const markAllBtn = document.getElementById("mark-all-read-btn");
+    if (markAllBtn) {
+        markAllBtn.addEventListener("click", (event) => {
+            event.preventDefault();
+            // This URL is already correctly handled from previous fixes
+            fetch("{% url 'gestion_notifications:pharmacien_marquer_tous_messages_lus' %}", {
+                method: "POST",
+                headers: { "X-CSRFToken": csrftoken },
+            })
+            .then((res) => {
+                if (!res.ok) {
+                    return res.text().then(text => { throw new Error(`HTTP error! Status: ${res.status}, Body: ${text}`) });
+                }
+                return res.json();
+            })
+            .then((data) => {
+                if (data.status === "success") {
+                    location.reload();
+                } else {
+                    console.error("Erreur lors du marquage de tous les messages:", data.message);
+                    Swal.fire('Erreur!', data.message, 'error');
+                }
+            })
+            .catch((error) => {
+                console.error("Erreur réseau ou du serveur (mark all):", error);
+                Swal.fire('Erreur de connexion!', 'Une erreur est survenue lors de la communication avec le serveur. Veuillez réessayer.', 'error');
+            });
+        });
+    }
+
+    // --- Logique pour la suppression avec SweetAlert ---
+    document.querySelectorAll(".delete-form").forEach((form) => {
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: "Confirmer la suppression ?",
+                text: "Cette action est irréversible.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Oui, supprimer",
+                cancelButtonText: "Annuler",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    });
+</script>
+{% endblock extra_js %}

@@ -1,0 +1,113 @@
+{% load static %}
+
+<!-- Sidebar Admin Conservé tel quel avec nouveau contenu -->
+<div class="sidebar" data-background-color="dark">
+    <div class="sidebar-logo">
+        <!-- Logo Header -->
+        <div class="logo-header" data-background-color="dark">
+            <a href="{% url 'administration:dashboard_admin' %}" class="logo">
+                <img src="{% static 'administrateur/images/superviseur.jpg' %}" alt="Logo Admin" height="50" class="navbar-brand rounded-circle"/>
+            </a>
+
+            <div class="nav-toggle">
+                <button class="btn btn-toggle toggle-sidebar">
+                    <i class="gg-menu-right"></i>
+                </button>
+                <button class="btn btn-toggle sidenav-toggler">
+                    <i class="gg-menu-left"></i>
+                </button>
+            </div>
+
+            <button class="topbar-toggler more">
+                <i class="gg-more-vertical-alt"></i>
+            </button>
+        </div>
+        <!-- End Logo Header -->
+    </div>
+
+    <div class="sidebar-wrapper scrollbar scrollbar-inner">
+        <div class="sidebar-content">
+            <ul class="nav nav-secondary">
+
+                <li class="nav-item {% if request.resolver_match.url_name == 'dashboard_admin' %}active{% endif %}">
+                    <a href="{% url 'administration:dashboard_admin' %}">
+                        <i class="fas fa-home"></i>
+                        <p>Tableau de bord</p>
+                    </a>
+                </li>
+
+                <li class="nav-section">
+                    <span class="sidebar-mini-icon">
+                        <i class="fa fa-ellipsis-h"></i>
+                    </span>
+                    <h4 class="text-section">Gestion</h4>
+                </li>
+
+                <li class="nav-item {% if request.resolver_match.url_name == 'manage_pharmacies' %}active{% endif %}">
+                    <a href="{% url 'administration:manage_pharmacies' %}">
+                        <i class="fa fa-user-md"></i>
+                        <p>Pharmaciens</p>
+                    </a>
+                </li>
+
+                <li class="nav-item {% if request.resolver_match.url_name == 'manage_products' %}active{% endif %}">
+                    <a href="{% url 'administration:manage_products' %}">
+                        <i class="fa fa-pills"></i>
+                        <p>Produits</p>
+                    </a>
+                </li>
+
+                <li class="nav-item {% if request.resolver_match.url_name == 'manage_forms' %}active{% endif %}">
+                    <a href="{% url 'administration:manage_forms' %}">
+                        <i class="fa fa-capsules"></i>
+                        <p>Formes pharmaceutiques</p>
+                    </a>
+                </li>
+
+                <li class="nav-item {% if request.resolver_match.url_name == 'manage_subscriptions' %}active{% endif %}">
+                    <a href="{% url 'administration:manage_subscriptions' %}">
+                        <i class="fa fa-credit-card"></i>
+                        <p>Abonnements</p>
+                    </a>
+                </li>
+
+                <li class="nav-item {% if request.resolver_match.url_name == 'expired_products' %}active{% endif %}">
+                    <a href="{% url 'administration:expired_products' %}">
+                        <i class="fa fa-exclamation-triangle"></i>
+                        <p>Produits expirés</p>
+                    </a>
+                </li>
+
+                <li class="nav-item {% if request.resolver_match.url_name == 'all_users' %}active{% endif %}">
+                    <a href="{% url 'administration:all_users' %}">
+                        <i class="fa fa-user-slash"></i>
+                        <p>Utilisateurs</p>
+                    </a>
+                </li>
+
+                <li class="nav-item {% if request.resolver_match.url_name == 'statistics' %}active{% endif %}">
+                    <a href="{% url 'administration:statistics' %}">
+                        <i class="fa fa-chart-bar"></i>
+                        <p>Statistiques</p>
+                    </a>
+                </li>
+
+                <!-- Divider -->
+                <li class="nav-section">
+                    <span class="sidebar-mini-icon">
+                        <i class="fa fa-ellipsis-h"></i>
+                    </span>
+                    <h4 class="text-section">Compte</h4>
+                </li>
+
+                <li class="nav-item">
+                    <button type="button" class="btn btn-link text-light p-0 bg-danger fs-2 border rounded-3 ml-2" data-bs-toggle="modal" data-bs-target="#logoutConfirmationModal">
+                        <i class="icon-logout"></i>
+                        <span class="p-2">Se déconnecter</span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- End Sidebar -->

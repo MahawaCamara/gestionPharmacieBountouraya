@@ -1,0 +1,76 @@
+{% extends 'base_admin.html' %}
+{% block title %}Statistiques du site{% endblock %}
+
+{% block content %}
+<h1 class="text-primary text-center my-4">
+  <i class="fa fa-chart-bar me-2"></i>Statistiques Globales
+</h1>
+
+<div class="row mb-5 text-center">
+  <div class="col-md-4">
+    <h6 class="mb-2">Abonnements créés</h6>
+    <canvas id="abonnementsChart" height="180"></canvas>
+  </div>
+  <div class="col-md-4">
+    <h6 class="mb-2">Pharmacies approuvées</h6>
+    <canvas id="pharmaciesChart" height="180"></canvas>
+  </div>
+  <div class="col-md-4">
+    <h6 class="mb-2">Revenus (GNF)</h6>
+    <canvas id="revenusChart" height="180"></canvas>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const months = {{ months|safe }};
+  const abonnementsData = {{ abonnements_per_month|safe }};
+  const pharmaciesData = {{ pharmacies_per_month|safe }};
+  const revenusData = {{ revenus_per_month|safe }};
+
+  const options = {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: { y: { beginAtZero: true } }
+  };
+
+  new Chart(document.getElementById('abonnementsChart'), {
+    type: 'bar',
+    data: {
+      labels: months,
+      datasets: [{
+        label: 'Abonnements',
+        data: abonnementsData,
+        backgroundColor: 'rgba(54, 162, 235, 0.7)'
+      }]
+    },
+    options
+  });
+
+  new Chart(document.getElementById('pharmaciesChart'), {
+    type: 'bar',
+    data: {
+      labels: months,
+      datasets: [{
+        label: 'Pharmacies',
+        data: pharmaciesData,
+        backgroundColor: 'rgba(255, 159, 64, 0.7)'
+      }]
+    },
+    options
+  });
+
+  new Chart(document.getElementById('revenusChart'), {
+    type: 'bar',
+    data: {
+      labels: months,
+      datasets: [{
+        label: 'Revenus',
+        data: revenusData,
+        backgroundColor: 'rgba(75, 192, 192, 0.7)'
+      }]
+    },
+    options
+  });
+</script>
+{% endblock %}

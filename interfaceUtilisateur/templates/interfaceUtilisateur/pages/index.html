@@ -1,4 +1,5 @@
-{%load static%}
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -11,8 +12,8 @@
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <!-- Favicons -->
-  <link href="{% static '/assets/img/favicon.png' %}" rel="icon">
-  <link href="{% static '/assets/img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+  <link href="{% static 'assets/img/doctors/logoClair.png' %}" rel="icon">
+  <link href="{% static 'assets/img/doctors/logoClair.png' %}" rel="apple-touch-icon">
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com" rel="preconnect">
@@ -27,7 +28,7 @@
   <link href="{% static '/assets/vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
   <link href="{% static '/assets/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
   <!-- Main CSS File -->
-  <link href="{% static 'assets/css/main.css' %}" rel="stylesheet">
+  <link href="{% static '/assets/css/main.css' %}" rel="stylesheet">
   <link href="{% static 'assets/css/interfaceStyle.css' %}" rel="stylesheet">
 
   <!-- =======================================================
@@ -40,88 +41,171 @@
 </head>
 
 <body class="index-page">
-  <header id="header" class="header sticky-top">
-    <!-- Topbar -->
-    <div class="topbar d-flex align-items-center" id="topbar">
-      <div class="container d-flex justify-content-center justify-content-md-between">
-        <div class="contact-info d-flex align-items-center">
-          <i class="bi bi-envelope d-flex align-items-center"><a href="mailto:contact@example.com">pharmaconnect@gmail.com</a></i>
-          <i class="bi bi-phone d-flex align-items-center ms-4"><span>+224 625 70 47 40</span></i>
-        </div>
-        <div class="social-links d-none d-md-flex align-items-center">
-          <a href="#" class="twitter"><i class="bi bi-twitter-x"></i></a>
-          <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
-          <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
-          <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
-        </div>
+<!-- Le Header de la page -->
+<header id="header" class="header sticky-top">
+  <!-- Topbar -->
+  <div class="topbar d-flex align-items-center" id="topbar">
+    <div
+      class="container d-flex justify-content-center justify-content-md-between"
+    >
+      <div class="contact-info d-flex align-items-center">
+        <i class="bi bi-envelope d-flex align-items-center"
+          ><a href="mailto:contact@example.com"
+            >pharmaconnect200@gmail.com</a
+          ></i
+        >
+        <i class="bi bi-phone d-flex align-items-center ms-4"
+          ><span>+224 625 70 47 40</span></i
+        >
       </div>
-    </div><!-- End Top Bar -->
-    
-    <div class="branding d-flex align-items-center">
-      <div class="container position-relative d-flex align-items-center justify-content-between">
-        <a href="index.html" class="logo d-flex align-items-center me-auto">
-          <h3 class="sitename">PharmaConnect</h3>
-        </a>
+      <div class="social-links d-none d-md-flex align-items-center">
+        <a href="#" class="twitter"><i class="bi bi-twitter-x"></i></a>
+        <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
+        <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
+        <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
+      </div>
+    </div>
+  </div>
+  <!-- End Top Bar -->
 
-        <nav id="navmenu" class="navmenu">
-          <ul>
-              <li><a href="#hero" class="active">Accueil</a></li>
-              <li><a href="">A propos</a></li>
-              <li><a href="#services">Produits</a></li>
-              <li><a href="#doctors">Services</a></li>
-              <li><a href="#contact">Contact</a></li>
-              <li><a href="{% url 'pharmacien:login' %}">Nous rejoindre</a></li>
+  <div class="branding d-flex align-items-center">
+    <div
+      class="container position-relative d-flex align-items-center justify-content-between"
+    >
+      <a href="#hero" class="logo d-flex align-items-center me-auto">
+        <h3 class="sitename">PharmaConnect</h3>
+      </a>
+
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <li><a href="#hero" class="active">Accueil</a></li>
+          <li><a href="#about">A propos</a></li>
+          <li><a href="#produits">Produits</a></li>
+          <li><a href="#services">Services</a></li>
+          <li><a href="#contact">Contact</a></li>
+          <li><a href="{% url 'rejoindre' %}">Nous rejoindre</a></li>
+          <li class="dropdown">
+            <a href="#"
+              ><span>Filtrer par: </span>
+              <i class="bi bi-chevron-down toggle-dropdown"></i
+            ></a>
+            <ul>
+              <!-- TYPE -->
               <li class="dropdown">
-                  <a href="#"><span>Filtrer par: </span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-                  <ul>
-                      <li><a href="#">Prix</a></li>
-                      <li class="dropdown">
-                          <a href="#"><span>Type</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-                          <ul>
-                              <li><a href="#">Nutrition</a></li>
-                              <li><a href="#">Cosmétiques</a></li>
-                          </ul>
-                      </li>
-                      <li><a href="#">Localité</a></li>
-                  </ul>
+                <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown"
+                  >Type</a
+                >
+                <ul class="dropdown-menu p-1" style="max-height: 150px; overflow-y: auto;">
+                  {% for type in types %}
+                  <li>
+                    <a
+                      href="#"
+                      class="dropdown-item"
+                      data-filter="type"
+                      data-value="{{ type }}"
+                      >{{ type }}</a
+                    >
+                  </li>
+                  {% endfor %}
+                </ul>
               </li>
-              <!-- Icône de recherche dans la navigation -->
-              <li class="search-icon-item">
-                <a href="#" id="searchToggle">
-                  <i class="bi bi-search"></i>
-                </a>
+              <!-- Exemple de menu déroulant villes avec scroll -->
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown"
+                  >Villes</a
+                >
+               <ul class="dropdown-menu p-1" style="max-height: 150px; overflow-y: auto;">
+                  {% for ville in villes %}
+                  <li>
+                    <a
+                      href="#"
+                      class="dropdown-item"
+                      data-filter="localite"
+                      data-value="{{ ville }}"
+                      >{{ ville }}</a
+                    >
+                  </li>
+                  {% endfor %}
+                </ul>
               </li>
-          </ul>
-          
-          <!-- Icône mobile -->
-          <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-          <div class="icons">
-            <a href="cart.html" class="icons-btn d-inline-block bag">
-              <span class="icon-shopping-bag"></span>
+
+              <!-- PRIX -->
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown"
+                  >Prix</a
+                >
+                <ul class="dropdown-menu">
+                  <li>
+                    <a
+                      href="#"
+                      class="dropdown-item"
+                      data-filter="prix"
+                      data-value="asc"
+                      >Prix croissant</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      class="dropdown-item"
+                      data-filter="prix"
+                      data-value="desc"
+                      >Prix décroissant</a
+                    >
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+
+          <!-- Icône de recherche dans la navigation -->
+          <li class="search-icon-item">
+            <a href="#" id="searchToggle">
+              <i class="bi bi-search"></i>
             </a>
-          </div>
-        </nav>
-      </div>
+          </li>
+        </ul>
+
+        <!-- Icône mobile -->
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+        <div class="icons">
+          <a href="cart.html" class="icons-btn d-inline-block bag">
+            <span class="icon-shopping-bag"></span>
+          </a>
+        </div>
+      </nav>
     </div>
-    
-    <!-- Barre de recherche (remplace la topbar) -->
-    <div class="topbar-search" id="topbarSearch" style="display: none;">
-      <div class="container">
-        <div class="search-container">
-          <!-- AJOUT de id="search-input" -->
-          <input type="text" id="search-input" placeholder="Rechercher un produit" class="search-input">
-          <button id="searchClose" class="search-close">
-            <i class="bi bi-x"></i>
-          </button>
-          <div id="loading-spinner" class="spinner-border text-primary position-absolute top-50 end-0 translate-middle-y d-none" role="status" style="width: 1.5rem; height: 1.5rem;">
-            <span class="visually-hidden">Chargement...</span>
-          </div>    
+  </div>
+
+  <!-- Barre de recherche (remplace la topbar) -->
+  <div class="topbar-search" id="topbarSearch" style="display: none">
+    <div class="container">
+      <div class="search-container">
+        <!-- AJOUT de id="search-input" -->
+        <input
+          type="text"
+          id="search-input"
+          placeholder="Rechercher un produit"
+          class="search-input"
+        />
+        <button id="searchClose" class="search-close">
+          <i class="bi bi-x"></i>
+        </button>
+        <div
+          id="loading-spinner"
+          class="spinner-border text-primary position-absolute top-50 end-0 translate-middle-y d-none"
+          role="status"
+          style="width: 1.5rem; height: 1.5rem"
+        >
+          <span class="visually-hidden">Chargement...</span>
         </div>
       </div>
     </div>
-    <div id="search-results" class="container mt-3"></div>   
+  </div>
+  <div id="search-results" class="container mt-3"></div>
 </header>
 
+<!-- Le Main de la page -->
   <main class="main">
     {% block contenu %}
     <!-- Hero Section -->
@@ -129,31 +213,10 @@
       <img src="{% static '/assets/img/hero-bg.jpg' %}" alt="" data-aos="fade-in">
       <div class="container position-relative">
         <div class="welcome position-relative" data-aos="fade-down" data-aos-delay="100">
-          <h2>Bienvenue chez PharmaConnect</h2>      
-          <div class="carousel-container">
-            <div class="carousel-track">
-              <div class="carousel-slide active">
-                <p>Besoin d'un médicament ? Trouvez-le en un clic.<br>
+          <h2>Bienvenue chez PharmaConnect</h2>
+          <p>Besoin d'un médicament ? Trouvez-le en un clic.<br>
                 Connectez-vous, comparez les prix et gagnez du temps.<br>
                 La santé n'attend pas, nous non plus !</p>
-              </div>
-              <div class="carousel-slide">
-                <p>Découvrez les pharmacies proches de chez vous.<br>
-                Fini les longues recherches : trouvez ce qu'il vous faut immédiatement.<br>
-                Simple, rapide, fiable.</p>
-              </div>
-              <div class="carousel-slide">
-                <p>Avec PharmaConnect, vous gagnez du temps et économisez.<br>
-                Des prix transparents, une disponibilité en temps réel.<br>
-                Votre santé mérite ce qu'il y a de mieux.</p>
-              </div>
-              <div class="carousel-slide">
-                <p>Rejoignez la révolution de la pharmacie connectée.<br>
-                Accès instantané, interface moderne, services adaptés à vos besoins.<br>
-                PharmaConnect est là pour vous.</p>
-              </div>
-            </div>
-          </div>
         </div>    
         <div class="content row gy-4">
           <div class="col-lg-4 d-flex align-items-stretch">
@@ -171,7 +234,7 @@
         </div><!-- End  Content-->
 
       </div>
-
+      
     </section><!-- /Hero Section -->
 
     <!-- About Section -->
@@ -185,8 +248,6 @@
             <img src="{% static '/assets/img/about.jpg' %}" class="img-fluid" alt="" style="height: 1000px; width: 100%; object-fit: cover;">
           </div>
         
-        
-
           <div class="col-lg-6 content" data-aos="fade-up" data-aos-delay="100">
             <h3>About Us</h3>
             <p>
@@ -239,36 +300,36 @@
         <div class="row gy-4">
 
           <div class="col-lg-3 col-md-6 d-flex flex-column align-items-center">
-            <i class="fa-solid fa-user-doctor"></i>
-            <div class="stats-item">
-              <span data-purecounter-start="0" data-purecounter-end="85" data-purecounter-duration="1" class="purecounter"></span>
-              <p>Nombre totale de pharmacies enrégistrées</p>
-            </div>
-          </div><!-- End Stats Item -->
+          <i class="fa-solid fa-user-doctor"></i>
+          <div class="stats-item">
+            <span class="purecounter" data-purecounter-start="0" data-purecounter-end="{{ total_pharmacies }}" data-purecounter-duration="1"></span>
+            <p>Nombre total de pharmacies enrégistrées</p>
+          </div>
+        </div>
 
-          <div class="col-lg-3 col-md-6 d-flex flex-column align-items-center">
-            <i class="fa-regular fa-hospital"></i>
-            <div class="stats-item">
-              <span data-purecounter-start="0" data-purecounter-end="18" data-purecounter-duration="1" class="purecounter"></span>
-              <p>Nombre total de produits enrégistrés</p>
-            </div>
-          </div><!-- End Stats Item -->
+        <div class="col-lg-3 col-md-6 d-flex flex-column align-items-center">
+          <i class="fa-regular fa-hospital"></i>
+          <div class="stats-item">
+            <span class="purecounter" data-purecounter-start="0" data-purecounter-end="{{ total_produits }}" data-purecounter-duration="1"></span>
+            <p>Nombre total de produits enrégistrés</p>
+          </div>
+        </div>
 
-          <div class="col-lg-3 col-md-6 d-flex flex-column align-items-center">
-            <i class="fas fa-flask"></i>
-            <div class="stats-item">
-              <span data-purecounter-start="0" data-purecounter-end="12" data-purecounter-duration="1" class="purecounter"></span>
-              <p>Nombre de personnes ayant visiter le site</p>
-            </div>
-          </div><!-- End Stats Item -->
+        <div class="col-lg-3 col-md-6 d-flex flex-column align-items-center">
+          <i class="fas fa-flask"></i>
+          <div class="stats-item">
+            <span class="purecounter" data-purecounter-start="0" data-purecounter-end="{{ total_visiteurs }}" data-purecounter-duration="1"></span>
+            <p>Nombre de personnes ayant visité le site</p>
+          </div>
+        </div>
 
-          <div class="col-lg-3 col-md-6 d-flex flex-column align-items-center">
-            <i class="fas fa-award"></i>
-            <div class="stats-item">
-              <span data-purecounter-start="0" data-purecounter-end="150" data-purecounter-duration="1" class="purecounter"></span>
-              <p>Nombre totale de recherches effectuées</p>
-            </div>
-          </div><!-- End Stats Item -->
+        <div class="col-lg-3 col-md-6 d-flex flex-column align-items-center">
+          <i class="fas fa-award"></i>
+          <div class="stats-item">
+            <span class="purecounter" data-purecounter-start="0" data-purecounter-end="{{ total_recherches }}" data-purecounter-duration="1"></span>
+            <p>Nombre total de recherches effectuées</p>
+          </div>
+        </div>
 
         </div>
 
@@ -277,103 +338,58 @@
     </section><!-- /Stats Section -->
 
     <!-- Produits recents Section -->
-    <section id="services" class="services section">
-
-      <!-- Section Title -->
+    <section id="produits" class="services section">
+      
       <div class="container section-title" data-aos="fade-up">
-        <h2>Medicaments recents</h2>
-        <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
-      </div><!-- End Section Title -->
-
-      <div class="container">
-
-        <div class="row gy-4">
-
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
-            <div class="service-item  position-relative">
-              <div class="icon">
-                <i class="fas fa-heartbeat"></i>
-              </div>
-              <a href="#" class="stretched-link">
-                <h3>Nesciunt Mete</h3>
-              </a>
-              <p>Provident nihil minus qui consequatur non omnis maiores. Eos accusantium minus dolores iure perferendis tempore et consequatur.</p>
-            </div>
-          </div><!-- End Service Item -->
-
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-            <div class="service-item position-relative">
-              <div class="icon">
-                <i class="fas fa-pills"></i>
-              </div>
-              <a href="#" class="stretched-link">
-                <h3>Eosle Commodi</h3>
-              </a>
-              <p>Ut autem aut autem non a. Sint sint sit facilis nam iusto sint. Libero corrupti neque eum hic non ut nesciunt dolorem.</p>
-            </div>
-          </div><!-- End Service Item -->
-
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
-            <div class="service-item position-relative">
-              <div class="icon">
-                <i class="fas fa-hospital-user"></i>
-              </div>
-              <a href="#" class="stretched-link">
-                <h3>Ledo Markt</h3>
-              </a>
-              <p>Ut excepturi voluptatem nisi sed. Quidem fuga consequatur. Minus ea aut. Vel qui id voluptas adipisci eos earum corrupti.</p>
-            </div>
-          </div><!-- End Service Item -->
-
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
-            <div class="service-item position-relative">
-              <div class="icon">
-                <i class="fas fa-dna"></i>
-              </div>
-              <a href="#" class="stretched-link">
-                <h3>Asperiores Commodit</h3>
-              </a>
-              <p>Non et temporibus minus omnis sed dolor esse consequatur. Cupiditate sed error ea fuga sit provident adipisci neque.</p>
-              <a href="#" class="stretched-link"></a>
-            </div>
-          </div>
-          <!-- End Service Item -->
-
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="500">
-            <div class="service-item position-relative">
-              <div class="icon">
-                <i class="fas fa-wheelchair"></i>
-              </div>
-              <a href="#" class="stretched-link">
-                <h3>Velit Doloremque</h3>
-              </a>
-              <p>Cumque et suscipit saepe. Est maiores autem enim facilis ut aut ipsam corporis aut. Sed animi at autem alias eius labore.</p>
-              <a href="#" class="stretched-link"></a>
-            </div>
-          </div><!-- End Service Item -->
-
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="600">
-            <div class="service-item position-relative">
-              <div class="icon">
-                <i class="fas fa-notes-medical"></i>
-              </div>
-              <a href="#" class="stretched-link">
-                <h3>Dolori Architecto</h3>
-              </a>
-              <p>Hic molestias ea quibusdam eos. Fugiat enim doloremque aut neque non et debitis iure. Corrupti recusandae ducimus enim.</p>
-              <a href="#" class="stretched-link"></a>
-            </div>
-          </div><!-- End Service Item -->
-
-        </div>
-
+        <h2>Médicaments récents</h2>
+        <p>Découvrez les derniers médicaments disponibles dans nos pharmacies partenaires</p>
       </div>
+      <div class="container">
+        <div id="carouselProduits" class="carousel slide" data-bs-ride="carousel">
+          <div class="carousel-inner">
+            {% for group in grouped_availabilities %}
+              <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                <div class="row gy-4">
+                  {% for availability in group %}
+                    {% with product=availability.product pharmacy_user=availability.pharmacy %}
+                      {% with pharmacy=pharmacy_user.pharmacy %}
+                        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:'1' }}00">
+                          <div class="service-item position-relative">
+                            <h3>{{ product.name }}</h3>
+                            {% if product.image %}
+                              <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded" style="height: 180px; object-fit: cover; margin-top: 10px;">
+                            {% endif %}
 
+                            <p><strong>Pharmacie :</strong> {{ availability.pharmacy.pharmacy_name }}</p>
+                            <p><strong>Localité :</strong> {{ availability.pharmacy.address }}</p>
+                            <p><strong>Prix :</strong> {{ availability.price }} FNG</p>
+
+                            <a href="" class="stretched-link"></a>
+                          </div>
+                        </div>
+                      {% endwith %}
+                    {% endwith %}
+                  {% endfor %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+          <!-- Flèches de navigation -->
+          <button class="carousel-control-prev" type="button" data-bs-target="#carouselProduits" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#carouselProduits" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+          </button>
+        </div>
+      
+      </div>
+    
     </section>
     <!-- /Produits recents Section -->
 
     <!-- Services Section -->
-    <section id="doctors" class="doctors section">
+    <section id="services" class="doctors section">
 
       <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
@@ -453,12 +469,8 @@
       <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
         <h2>Contact</h2>
-        <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
-      </div><!-- End Section Title -->
-
-      {% comment %} <div class="mb-5" data-aos="fade-up" data-aos-delay="200">
-        <iframe style="border:0; width: 100%; height: 270px;" src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d48389.78314118045!2d-74.006138!3d40.710059!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25a22a3bda30d%3A0xb89d1fe6bc499443!2sDowntown%20Conference%20Center!5e0!3m2!1sen!2sus!4v1676961268712!5m2!1sen!2sus" frameborder="0" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-      </div><!-- End Google Maps --> {% endcomment %}
+        <p>En cas de problème ou pour toute assistance, n’hésitez pas à nous contacter. Nous sommes disponibles pour répondre à vos préoccupations.</p>
+      </div>
 
       <div class="container" data-aos="fade-up" data-aos-delay="100">
 
@@ -468,16 +480,16 @@
             <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="300">
               <i class="bi bi-geo-alt flex-shrink-0"></i>
               <div>
-                <h3>Location</h3>
-                <p>A108 Adam Street, New York, NY 535022</p>
+                <h3>Adresse</h3>
+                <p>Conakry, Commune de Maneah, Bentouraya</p>
               </div>
             </div><!-- End Info Item -->
 
             <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="400">
               <i class="bi bi-telephone flex-shrink-0"></i>
               <div>
-                <h3>Call Us</h3>
-                <p>+1 5589 55488 55</p>
+                <h3>Appelez-nous</h3>
+                <p>+224 625 70 47 40</p>
               </div>
             </div><!-- End Info Item -->
 
@@ -485,52 +497,70 @@
               <i class="bi bi-envelope flex-shrink-0"></i>
               <div>
                 <h3>Email Us</h3>
-                <p>info@example.com</p>
+                <p>pharmaconnect200@gmail.com</p>
               </div>
             </div><!-- End Info Item -->
 
           </div>
 
           <div class="col-lg-8">
-            <form action="forms/contact.php" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="200">
+            <form method="post" action="{% url 'home' %}" class="php-email-form" id="contact-form">
+              {% csrf_token %}
+              {% if messages %}
+                  <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                      {% for message in messages %}
+                        Swal.fire({
+                          icon: '{% if message.tags == "success" %}success{% elif message.tags == "error" %}error{% else %}info{% endif %}',
+                          title: '{{ message }}',
+                          confirmButtonText: 'OK'
+                        });
+                      {% endfor %}
+                    });
+                    Swal.fire({
+                      icon: 'success',
+                      title: '{{ message }}',
+                      confirmButtonText: 'OK',
+                      width: '300px'  // Réduit la largeur à 300px, tu peux ajuster
+                    });
+                  </script>
+              {% endif %}
+
               <div class="row gy-4">
+                  <div class="col-md-6">
+                    <input type="text" name="name" class="form-control" placeholder="Votre nom" required>
+                  </div>
 
-                <div class="col-md-6">
-                  <input type="text" name="name" class="form-control" placeholder="Your Name" required="">
+                  <div class="col-md-6">
+                    <input type="email" name="email" class="form-control" placeholder="Votre email" required>
+                  </div>
+
+                  <div class="col-md-12">
+                    <input type="text" name="subject" class="form-control" placeholder="Sujet" required>
+                  </div>
+
+                  <div class="col-md-12">
+                    <textarea name="message" class="form-control" rows="6" placeholder="Message" required></textarea>
+                  </div>
+
+                  <div class="col-md-12 text-center">
+                    <button type="submit">Envoyer</button>
+                  </div>
                 </div>
+              </form>
 
-                <div class="col-md-6 ">
-                  <input type="email" class="form-control" name="email" placeholder="Your Email" required="">
-                </div>
-
-                <div class="col-md-12">
-                  <input type="text" class="form-control" name="subject" placeholder="Subject" required="">
-                </div>
-
-                <div class="col-md-12">
-                  <textarea class="form-control" name="message" rows="6" placeholder="Message" required=""></textarea>
-                </div>
-
-                <div class="col-md-12 text-center">
-                  <div class="loading">Loading</div>
-                  <div class="error-message"></div>
-                  <div class="sent-message">Your message has been sent. Thank you!</div>
-
-                  <button type="submit">Send Message</button>
-                </div>
-
-              </div>
-            </form>
           </div><!-- End Contact Form -->
 
         </div>
 
       </div>
 
-    </section><!-- /Contact Section -->
+    </section>
+    <!-- /Contact Section -->
 
   </main>
   {% endblock %}
+  <!-- Le Footer de la page -->
   <footer id="footer" class="footer light-background">
 
     <div class="container footer-top">
@@ -619,16 +649,243 @@
   <!-- Preloader -->
   <div id="preloader"></div>
 
+  {% comment %} <script src="{% static 'assets/js/interfaceStyle.js' %}"></script> {% endcomment %}
   <!-- Vendor JS Files -->
-  <script src="{% static '/assets/vendor/php-email-form/validate.js' %}"></script>
+  {% comment %} <script src="{% static '/assets/vendor/php-email-form/validate.js' %}"></script> {% endcomment %}
   <script src="{% static '/assets/vendor/aos/aos.js' %}"></script>
   <script src="{% static '/assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
   <script src="{% static '/assets/vendor/glightbox/js/glightbox.min.js' %}"></script>
   <script src="{% static '/assets/vendor/purecounter/purecounter_vanilla.js' %}"></script>
   <script src="{% static '/assets/vendor/swiper/swiper-bundle.min.js' %}"></script>
-  <script src="{% static 'assets/js/interfaceStyle.js' %}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- Le Script de la recherche -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const searchInput = document.getElementById('search-input');
+  const resultBox = document.getElementById('search-results');
+  const searchToggle = document.getElementById('searchToggle');
+  const topbarSearch = document.getElementById('topbarSearch');
+  const searchClose = document.getElementById('searchClose');
+  let debounceTimer;
+
+  // Afficher la barre de recherche
+  if (searchToggle && topbarSearch) {
+    searchToggle.addEventListener('click', function (e) {
+      e.preventDefault();
+      topbarSearch.style.display = 'block';
+      searchInput.focus();
+    });
+  }
+
+  // Fermer la barre de recherche
+  if (searchClose && topbarSearch) {
+    searchClose.addEventListener('click', function () {
+      topbarSearch.style.display = 'none';
+      resultBox.innerHTML = '';
+      searchInput.value = '';
+      clearActiveFilters();
+    });
+  }
+
+  function getActiveFilters() {
+    const filters = { prix: '', type: '', localite: '' };
+    document.querySelectorAll('li.dropdown ul li a.active').forEach(link => {
+      const type = link.getAttribute('data-filter');
+      const value = link.getAttribute('data-value');
+      if (type && value) filters[type] = value;
+    });
+    return filters;
+  }
+
+  function clearActiveFilters() {
+    document.querySelectorAll('li.dropdown ul li a.active').forEach(link => {
+      link.classList.remove('active');
+    });
+  }
+
+  function buildSearchURL(query, saveHistory = false) {
+    const filters = getActiveFilters();
+    let url = `/produit/search/?q=${encodeURIComponent(query)}`;
+    if (saveHistory) url += '&save_history=true';
+    if (filters.prix) url += `&prix=${encodeURIComponent(filters.prix)}`;
+    if (filters.type) url += `&type=${encodeURIComponent(filters.type)}`;
+    if (filters.localite) url += `&localite=${encodeURIComponent(filters.localite)}`;
+    return url;
+  }
+
+  function afficherResultats(results) {
+    resultBox.innerHTML = '';
+    if (results.length === 0) {
+      resultBox.innerHTML = `
+        <div class="alert alert-warning text-center" role="alert">
+          <i class="bi bi-emoji-frown"></i> Aucun résultat trouvé.
+        </div>`;
+      return;
+    }
+
+    results.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'row align-items-center p-3 mb-3 border rounded shadow-sm animate__animated animate__fadeInUp';
+
+      let badgeEtat = '';
+      if (item.etat_produit === 'expire') {
+        badgeEtat = `<span class="badge bg-danger ms-2"><i class="bi bi-x-circle-fill"></i> Expiré</span>`;
+      } else if (item.etat_produit === 'expire_bientot') {
+        badgeEtat = `<span class="badge bg-warning text-dark ms-2"><i class="bi bi-exclamation-triangle-fill"></i> Expire bientôt</span>`;
+      } else if (item.etat_produit === 'bon_etat') {
+        badgeEtat = `<span class="badge bg-success ms-2"><i class="bi bi-check-circle-fill"></i> Bon état</span>`;
+      }
+
+      row.innerHTML = `
+        <div class="col-md-3">
+          <strong style="color: #0d6efd;">${item.nom_produit}</strong>
+          ${badgeEtat}
+        </div>
+        <div class="col-md-3">
+          <i class="bi bi-hospital"></i> ${item.nom_pharmacie}
+        </div>
+        <div class="col-md-3">
+          <i class="bi bi-geo-alt-fill"></i> ${item.adresse_pharmacie}
+        </div>
+        <div class="col-md-2 text-success fw-bold">
+          ${item.prix} FNG
+        </div>
+        <div class="col-md-1 text-end">
+          <a href="${item.detail_url}" class="btn btn-sm btn-outline-primary">Détails</a>
+        </div>
+      `;
+
+      resultBox.appendChild(row);
+    });
+  }
+
+  function lancerRecherche(query, saveHistory = false) {
+    if (!query || query.length <= 1) {
+      resultBox.innerHTML = '';
+      return;
+    }
+
+    resultBox.innerHTML = `
+      <div class="text-center my-3" id="loading-spinner">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Chargement...</span>
+        </div>
+        <p class="mt-2">Recherche en cours...</p>
+      </div>`;
+
+    fetch(buildSearchURL(query, saveHistory))
+      .then(response => response.json())
+      .then(data => afficherResultats(data.results))
+      .catch(error => {
+        resultBox.innerHTML = `
+          <div class="alert alert-danger" role="alert">
+            Erreur de recherche : ${error.message}
+          </div>`;
+      });
+  }
+
+  if (searchInput) {
+    // Recherche avec ENTRÉE = enregistre dans l’historique
+    searchInput.addEventListener('keydown', function (event) {
+      const query = this.value.trim();
+      if (event.key === "Enter" && query.length > 1) {
+        event.preventDefault();
+        lancerRecherche(query, true);
+      }
+    });
+
+    // Recherche sans ENTRÉE = pas d'enregistrement dans l’historique
+    searchInput.addEventListener('input', function () {
+      const query = this.value.trim();
+      clearTimeout(debounceTimer);
+
+      if (query.length === 0) {
+        resultBox.innerHTML = '';
+        return;
+      }
+
+      if (query.length > 1) {
+        debounceTimer = setTimeout(() => lancerRecherche(query, false), 600);
+      }
+    });
+  }
+
+  // Gestion des sous-menus dans les filtres
+  document.querySelectorAll('.dropdown-submenu > a').forEach(function (el) {
+    el.addEventListener('click', function (e) {
+      e.preventDefault();
+      const submenu = this.nextElementSibling;
+      if (submenu) submenu.classList.toggle('show');
+    });
+  });
+
+  document.addEventListener('click', function (e) {
+    document.querySelectorAll('.dropdown-menu.show').forEach(function (menu) {
+      if (!menu.contains(e.target)) menu.classList.remove('show');
+    });
+  });
+
+  // Filtres dynamiques
+  document.querySelectorAll('li.dropdown ul li a').forEach(link => {
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      const filterType = this.getAttribute('data-filter');
+      document.querySelectorAll(`a[data-filter="${filterType}"]`).forEach(el => el.classList.remove('active'));
+      this.classList.add('active');
+      const query = searchInput.value.trim();
+      if (query.length > 1) lancerRecherche(query, false);
+    });
+  });
+});
+</script>
+
+
+{% comment %} {% if messages %}
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      {% for message in messages %}
+        Swal.fire({
+          icon: '{% if message.tags == "success" %}success{% elif message.tags == "error" %}error{% else %}info{% endif %}',
+          title: '{{ message }}',
+          confirmButtonText: 'OK'
+        });
+      {% endfor %}
+    });
+    // Script pour la date
+    results.forEach(item => {
+  const row = document.createElement('div');
+  row.className = 'row align-items-center p-2 mb-2 border rounded animate__animated animate__fadeInUp';
+  row.innerHTML = `
+    <div class="col-md-3"><strong style="color: skyblue;">${item.nom_produit}</strong></div>
+    <div class="col-md-3"><i class="bi bi-hospital"></i> ${item.nom_pharmacie}</div>
+    <div class="col-md-3"><i class="bi bi-geo-alt-fill"></i> ${item.adresse_pharmacie}</div>
+    <div class="col-md-2 text-success fw-bold">${item.prix} FNG</div>
+    <div class="col-md-1 text-end">
+      <a href="${item.detail_url}" class="btn btn-sm btn-outline-primary">Détails</a>
+    </div>
+  `;
+
+  const badge = document.createElement('div');
+  badge.className = 'mt-1';
+
+  if (item.etat_produit === 'expire_bientot') {
+    badge.innerHTML = `<span class="badge bg-warning text-dark">Expire bientôt</span>`;
+  } else if (item.etat_produit === 'expire') {
+    badge.innerHTML = `<span class="badge bg-danger">Expiré</span>`;
+  } else {
+    badge.innerHTML = `<span class="badge bg-success">En bon état</span>`;
+  }
+
+  row.appendChild(badge);
+  resultBox.appendChild(row);
+});
+
+  </script>
+{% endif %} {% endcomment %}
+
   <!-- Main JS File -->
   <script src="{% static 'assets/js/main.js' %}"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
 </body>
 </html>

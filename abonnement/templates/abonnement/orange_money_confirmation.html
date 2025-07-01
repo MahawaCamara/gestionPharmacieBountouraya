@@ -1,0 +1,14 @@
+{% extends "base_abonnement.html" %}
+{% block title %}Confirmation Paiement{% endblock %}
+
+{% block content %}
+<div class="text-center">
+  {% include 'includes/messages.html' %}
+  <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="green" class="bi bi-check-circle-fill mb-3" viewBox="0 0 16 16">
+    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.97 11.03a.75.75 0 0 0 1.07 0L13 6.06l-1.06-1.06-4.47 4.47L5.03 7.03 4 8.06l2.97 2.97z"/>
+  </svg>
+  <h5 class="text-success">Paiement réussi !</h5>
+  <p class="mb-3">Votre abonnement a été activé avec succès.</p>
+  <a href="{% url 'pharmacien:pharmacy_registration' %}" class="btn btn-success w-100">Compléter l'inscription pharmacie</a>
+</div>
+{% endblock %}

@@ -11,4 +11,7 @@ urlpatterns = [
     path('details/<int:id>/', views.product_detail, name='product_detail'),
     path('search/', search_products, name='search_products'),
     path('historique-recherches/', views.search_history, name='search_history'),
+    
+    
+
 ]

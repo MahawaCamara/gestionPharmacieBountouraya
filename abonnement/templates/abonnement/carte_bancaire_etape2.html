@@ -1,0 +1,121 @@
+{% extends "base_carte_bancaire.html" %}
+
+{% block title %}Carte Bancaire - Étape 2{% endblock %}
+
+{% block content %}
+{% include 'includes/messages.html' %}
+<h5 class="text-center text-primary mb-4 fw-semibold">Étape 2 sur 4 : Expiration & CVV</h5>
+
+<form method="POST" id="etape2Form" novalidate>
+  {% csrf_token %}
+
+  <div class="mb-3">
+    <label for="date_exp" class="form-label">Date d'expiration (MM/AA)</label>
+    <input
+      type="text"
+      class="form-control"
+      id="date_exp"
+      name="date_exp"
+      placeholder="MM/AA"
+      maxlength="5"
+      required
+      autocomplete="off"
+    >
+    <div class="invalid-feedback">Entrez une date au format MM/AA valide et non expirée.</div>
+  </div>
+
+  <div class="mb-3">
+    <label for="cvv" class="form-label">Code CVV</label>
+    <input
+      type="password"
+      class="form-control"
+      id="cvv"
+      name="cvv"
+      maxlength="3"
+      inputmode="numeric"
+      pattern="\d{3}"
+      required
+    >
+    <div class="invalid-feedback">Le CVV doit comporter 3 chiffres.</div>
+  </div>
+
+  <div class="d-flex justify-content-between">
+    <a href="{% url 'abonnement:carte_bancaire_etape1' %}" class="btn btn-outline-secondary">Retour</a>
+    <button type="submit" class="btn btn-info text-white">Suivant</button>
+  </div>
+</form>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  const form = document.getElementById('etape2Form');
+  const dateInput = document.getElementById('date_exp');
+  const cvvInput = document.getElementById('cvv');
+
+  function isValidDate(date) {
+    const match = date.match(/^(\d{2})\/(\d{2})$/);
+    if (!match) return false;
+
+    const month = parseInt(match[1], 10);
+    const year = parseInt(match[2], 10);
+    if (month < 1 || month > 12) return false;
+
+    // Vérifie que la date n'est pas expirée
+    const now = new Date();
+    const currentYear = now.getFullYear() % 100;
+    const currentMonth = now.getMonth() + 1;
+
+    return (year > currentYear) || (year === currentYear && month >= currentMonth);
+  }
+
+  // Format automatique MM/AA
+  dateInput.addEventListener('input', () => {
+    let value = dateInput.value.replace(/[^\d]/g, '').slice(0, 4);
+    if (value.length >= 3) {
+      value = value.slice(0, 2) + '/' + value.slice(2);
+    }
+    dateInput.value = value;
+
+    if (isValidDate(value)) {
+      dateInput.classList.remove('is-invalid');
+      dateInput.classList.add('is-valid');
+    } else {
+      dateInput.classList.remove('is-valid');
+      dateInput.classList.remove('is-invalid');
+    }
+  });
+
+  // Validation CVV
+  cvvInput.addEventListener('input', () => {
+    cvvInput.value = cvvInput.value.replace(/\D/g, '').slice(0, 3);
+    if (/^\d{3}$/.test(cvvInput.value)) {
+      cvvInput.classList.remove('is-invalid');
+      cvvInput.classList.add('is-valid');
+    } else {
+      cvvInput.classList.remove('is-valid');
+      cvvInput.classList.remove('is-invalid');
+    }
+  });
+
+  form.addEventListener('submit', (e) => {
+    const dateValid = isValidDate(dateInput.value);
+    const cvvValid = /^\d{3}$/.test(cvvInput.value);
+
+    if (!dateValid) {
+      dateInput.classList.add('is-invalid');
+      dateInput.focus();
+      e.preventDefault();
+    } else {
+      dateInput.classList.remove('is-invalid');
+    }
+
+    if (!cvvValid) {
+      cvvInput.classList.add('is-invalid');
+      if (dateValid) cvvInput.focus(); // Ne pas écraser la date si elle est invalide
+      e.preventDefault();
+    } else {
+      cvvInput.classList.remove('is-invalid');
+    }
+  });
+</script>
+{% endblock %}

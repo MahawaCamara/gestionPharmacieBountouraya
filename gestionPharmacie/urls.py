@@ -20,12 +20,15 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    # path('admin/', admin.site.urls),
     path('', include('interfaceUtilisateur.urls')),
     path('interfaceUtilisateur/', include('interfaceUtilisateur.urls')),
+    path('account/', include('users.urls')),
     path('pharmacien/', include('pharmacien.urls' , namespace='pharmacien')),
-    path('accounts/', include('allauth.urls')),
     path('produit/', include('Produit.urls')), 
+    path('notifications/', include('gestion_notifications.urls')),
+    path('abonnement/', include('abonnement.urls')),
+    path('admin/', include('administrateur.urls', namespace='administration')),
 
 ]  + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

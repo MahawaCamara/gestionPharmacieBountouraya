@@ -1,0 +1,80 @@
+{% extends "base_admin.html" %}
+{% load static %}
+
+{% block title %}Toutes les notifications{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+
+  <h2 class="text-center text-primary mb-4">📢 Toutes les notifications</h2>
+
+  {% if notifications %}
+    <div class="d-flex justify-content-between mb-3">
+      <form method="post" action="{% url 'gestion_notifications:admin_marquer_tout_lu' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline-success btn-sm">
+          ✅ Tout marquer comme lue
+        </button>
+      </form>
+
+      <form method="post" action="{% url 'gestion_notifications:admin_supprimer_toutes_notifications' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline-danger btn-sm">
+          🗑 Supprimer toutes les notifications
+        </button>
+      </form>
+    </div>
+
+    <div class="list-group">
+      {% for notif in notifications %}
+        <div class="list-group-item position-relative {% if not notif.lu %}bg-light{% endif %}">
+
+          <!-- Supprimer -->
+          <form method="post" action="{% url 'gestion_notifications:admin_supprimer_notification' notif.id %}" class="position-absolute top-0 end-0 m-2">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-link text-danger p-0" title="Supprimer">
+              <i class="bi bi-x-circle-fill fs-5"></i>
+            </button>
+          </form>
+
+          <!-- Contenu notification -->
+          <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1 text-dark">{{ notif.titre }}</h5>
+            <small class="text-muted">{{ notif.date_creation|timesince }} </small>
+          </div>
+
+          <p class="mb-2 mt-2 text-muted">
+            {% if notif.type == 'expiration_produit' %}
+              🧪 {{ notif.message }}
+            {% elif notif.type == 'produit_recherche' %}
+              🔍 {{ notif.message }}
+            {% elif notif.type == 'suggestion' %}
+              💡 {{ notif.message }}
+            {% else %}
+              🔔 {{ notif.message }}
+            {% endif %}
+          </p>
+
+          <div class="d-flex justify-content-between align-items-center">
+            {% if not notif.lu %}
+              <form method="post" action="{% url 'gestion_notifications:admin_marquer_lu' notif.id %}">
+                {% csrf_token %}
+                <button type="submit" class="badge bg-warning text-dark border-0">
+                  Marquer comme lue
+                </button>
+              </form>
+            {% else %}
+              <span class="badge bg-success">Déjà lue</span>
+            {% endif %}
+          </div>
+
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-info text-center">
+      Aucune notification disponible pour le moment.
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

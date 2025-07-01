@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Nouveau Message - Plateforme PharmaCoonect</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 30px auto;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+        }
+        .email-header {
+            background-color: #007bff;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+        .email-header h2 {
+            margin: 0;
+            font-size: 22px;
+        }
+        .email-body {
+            padding: 25px 20px;
+        }
+        .email-body p {
+            margin: 15px 0;
+        }
+        .email-body .message-box {
+            background-color: #f1f1f1;
+            padding: 15px;
+            border-left: 4px solid #007bff;
+            white-space: pre-wrap;
+            font-style: italic;
+        }
+        .email-body a.button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 20px;
+            background-color: #007bff;
+            color: #fff !important;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .email-footer {
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <h2>📬 Nouveau message reçu</h2>
+        </div>
+        <div class="email-body">
+            <p>Bonjour cher(e) Pharmacien(ne),</p>
+            <p>Un utilisateur vous a contacté via l’un de vos produits disponibles sur la plateforme <strong>PharmaConnect</strong>.</p>
+
+            <p><strong>Expéditeur :</strong> {{ expediteur_nom }} &lt;{{ expediteur_email }}&gt;</p>
+            <p><strong>Sujet :</strong> {{ sujet }}</p>
+
+            <p><strong>Message :</strong></p>
+            <div class="message-box">
+                {{ corps }}
+            </div>
+            <p>Bien à vous,<br>L’équipe <strong>PharmaConnect</strong></p>
+        </div>
+        <div class="email-footer">
+            &copy; {% now "Y" %} Pharmacie. Tous droits réservés.
+        </div>
+    </div>
+</body>
+</html>

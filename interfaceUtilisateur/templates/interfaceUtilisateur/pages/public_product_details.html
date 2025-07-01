@@ -1,0 +1,263 @@
+{% extends "baseInterface.html" %} 
+{% load widget_tweaks %} 
+{% load static %} 
+{%block contenu %}
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+/>
+<link rel="stylesheet" href="{% static 'produit/css/produitStyle.css' %}" />
+
+<div class="container py-5">
+  <div class="text-center animate__animated animate__fadeInDown">
+    <h2 class="mt-4">
+      🧾 Détails du produit : <strong>{{ product.name }}</strong>
+    </h2>
+  </div>
+
+  <div
+    class="card shadow-sm mb-4 animate__animated animate__fadeInUp mx-auto"
+    style="max-width: 800px"
+  >
+    <div class="card-body">
+      <p><strong>🧪 Type :</strong> {{ product.type }}</p>
+      <p>
+        <strong>📄 Description :</strong><br />
+        {{ product.description }}
+      </p>
+      <p>
+        <strong>📅 Date d'expiration :</strong> {{ product.expiration_date }}
+      </p>
+      <p>
+        <strong>💊 Mode d'utilisation :</strong><br />
+        {{ product.usage_mode }}
+      </p>
+      <p>
+        <strong>🧬 Posologie :</strong><br />
+        {{ product.posology }}
+      </p>
+    </div>
+  </div>
+
+  <div
+    class="mx-auto animate__animated animate__fadeInUp animate__delay-1s"
+    style="max-width: 800px"
+  >
+    <h4 class="mb-3 text-center">💼 Formes disponibles</h4>
+
+    {% if product.availabilities.all %}
+    <ul class="list-group mb-4">
+      {% for availability in product.availabilities.all %}
+      <li
+        class="list-group-item d-flex justify-content-between align-items-center"
+      >
+        <div>
+          <strong>Forme :</strong> {{ availability.form.name }}<br />
+          <strong>Dosage :</strong> {{ availability.dosage }}<br />
+          <strong>Prix :</strong> {{ availability.price }} FNG
+        </div>
+        <small class="text-muted"
+          >🏥 Pharmacie : {{ availability.pharmacy.pharmacy_name }}</small
+        >
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <div class="alert alert-warning text-center">
+      Aucune disponibilité enregistrée.
+    </div>
+    {% endif %}
+  </div>
+
+  <button
+    type="button"
+    class="btn btn-outline-primary"
+    data-bs-toggle="modal"
+    data-bs-target="#contactModal"
+  >
+    Contacter le pharmacien
+  </button>
+
+  <div
+    class="modal fade"
+    id="contactModal"
+    tabindex="-1"
+    aria-labelledby="contactModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 shadow-lg border-0">
+        <form id="contactFormAjax" method="post" novalidate>
+          {% csrf_token %}
+          <div class="modal-header bg-primary text-white rounded-top-4">
+            <h5 class="modal-title" id="contactModalLabel">
+              📨 Contacter le pharmacien
+            </h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+              aria-label="Fermer"
+            ></button>
+          </div>
+          <div class="modal-body bg-light">
+            <div class="form-floating mb-3">
+              {{ form.nom|add_class:"form-control" }}
+              <label for="{{ form.nom.id_for_label }}"
+                >{{ form.nom.label }}</label
+              >
+            </div>
+            <div class="form-floating mb-3">
+              {{ form.email|add_class:"form-control" }}
+              <label for="{{ form.email.id_for_label }}"
+                >{{ form.email.label }}</label
+              >
+            </div>
+            <div class="form-floating">
+              {{ form.message|add_class:"form-control" }}
+              <label for="{{ form.message.id_for_label }}"
+                >{{ form.message.label }}</label
+              >
+            </div>
+          </div>
+          <div class="modal-footer bg-light">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Annuler
+            </button>
+            <button type="submit" class="btn btn-primary">Envoyer ✉️</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div
+      id="toastNotification"
+      class="toast align-items-center text-white bg-success border-0"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+    >
+      <div class="d-flex">
+        <div class="toast-body" id="toastMessage"></div>
+        <button
+          type="button"
+          class="btn-close btn-close-white me-2 m-auto"
+          data-bs-dismiss="toast"
+          aria-label="Fermer"
+        ></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Champ de recherche caché -->
+  <div class="text-center my-4">
+    <input
+      type="text"
+      id="searchInput"
+      class="form-control d-none mx-auto"
+      placeholder="Rechercher un produit..."
+      style="max-width: 400px"
+    />
+  </div>
+
+  <div
+    class="text-center mt-4 animate__animated animate__fadeInUp animate__delay-2s"
+  >
+    <a href="{% url 'home' %}" class="btn btn-outline-primary px-4 py-2">
+      ⬅️ Retour à la recherche
+    </a>
+  </div>
+</div>
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("contactFormAjax");
+  const submitBtn = form.querySelector('button[type="submit"]');
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    // Désactiver le bouton pour éviter les doubles clics
+    submitBtn.disabled = true;
+    submitBtn.innerText = "Envoi...";
+
+    const formData = new FormData(form);
+
+    fetch("", {
+      method: "POST",
+      headers: {
+        "X-Requested-With": "XMLHttpRequest"
+      },
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === "success") {
+        // Fermer la modale immédiatement
+        const modal = bootstrap.Modal.getInstance(document.getElementById("contactModal"));
+        if (modal) modal.hide();
+
+        // Réinitialiser le formulaire
+        form.reset();
+
+        // ✅ Affiche un message furtif (en arrière-plan)
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'success',
+          title: 'Message envoyé',
+          showConfirmButton: false,
+          timer: 1500
+        });
+
+        // ✅ Recharge immédiate de la page
+        location.reload();
+
+      } else if (data.status === "warning") {
+        Swal.fire({
+          icon: "warning",
+          title: "Attention",
+          text: data.message,
+          confirmButtonColor: '#f39c12'
+        });
+      } else {
+        let errorMsg = "Une erreur est survenue.";
+        if (data.message && typeof data.message === 'object') {
+          errorMsg = Object.values(data.message).flat().join(' ');
+        }
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: errorMsg,
+          confirmButtonColor: '#e74c3c'
+        });
+      }
+    })
+    .catch(error => {
+      console.error("Erreur AJAX :", error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur réseau',
+        text: "Impossible d'envoyer le message. Veuillez réessayer.",
+        confirmButtonColor: '#e74c3c'
+      });
+    })
+    .finally(() => {
+      // Réactiver le bouton
+      submitBtn.disabled = false;
+      submitBtn.innerText = "Envoyer";
+    });
+  });
+});
+</script>
+{% endblock %}
+{% endblock %}
+

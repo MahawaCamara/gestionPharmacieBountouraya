@@ -1,0 +1,70 @@
+{% extends 'administration/base.html' %}
+{% block content %}
+
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="fw-bold text-primary">📬 Mes notifications</h3>
+    <a
+      href="{% url 'gestion_notifications:pharmacien_mark_all_notifications_as_read' %}"
+      class="btn btn-success btn-sm"
+    >
+      ✅ Tout marquer comme lu
+    </a>
+  </div>
+
+  {% if notifications %}
+  <div >
+    {% for notif in notifications %}
+    <div >
+      <div
+        class="card shadow-sm {% if not notif.lu %} border-2 border-warning-subtle bg-warning-subtle {% endif %}"
+      >
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h5 class="card-title mb-1">
+                {{ notif.titre }}
+                {% if notif.type == 'produit_recherche' %}
+                  <span class="badge bg-warning text-dark ms-2">Produit recherché</span>
+                {% endif %}
+                {% if not notif.lu %}
+                  <span class="badge bg-danger ms-2">Non lue</span>
+                {% endif %}
+              </h5>
+
+              <p class="card-text mt-2">
+                {% if notif.type == 'produit_recherche' %}
+                  Bonjour,<br />
+                  Nous avons remarqué un intérêt croissant pour le produit <strong>{{ notif.message }}</strong>, actuellement absent de votre stock.<br />
+                  Afin de répondre à la demande locale et d’optimiser vos ventes, nous vous encourageons à envisager son approvisionnement.
+                {% else %}
+                  {{ notif.message }}
+                {% endif %}
+              </p>
+
+              <small class="text-muted">
+                🕒 {{ notif.date_creation|date:"d/m/Y H:i" }}
+              </small>
+            </div>
+
+            {% if not notif.lu %}
+            <a
+              href="{% url 'gestion_notifications:pharmacien_mark_notification_as_read' notif.id %}"
+              class="btn btn-outline-primary btn-sm"
+            >
+              Marquer comme lu
+            </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="alert alert-info text-center">
+    Aucune notification pour le moment.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

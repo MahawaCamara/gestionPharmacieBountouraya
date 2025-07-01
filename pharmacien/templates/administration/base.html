@@ -5,43 +5,366 @@
 <body>
     <div class="wrapper">
         {% include 'administration/partials/side-bar.html' %}
-
         <div class="main-panel">
+            {% if jours_restants or heures_restantes or minutes_restantes %}
+            <div id="essai-banner"
+                class="fixed top-0 left-0 w-full bg-yellow-300 text-black py-2 overflow-hidden z-50 text-center font-semibold shadow"
+                style="display:none;">
+                <div class="marquee-wrapper">
+                    <div class="marquee-text">
+                        🎁 Il vous reste {{ jours_restants }} j {{ heures_restantes }} h {{ minutes_restantes }} min d'abonnement. ⏳
+                    </div>
+                </div>
+            </div>
+
+            <style>
+                /* simple animation marquee */
+                .marquee-wrapper {
+                overflow: hidden;
+                white-space: nowrap;
+                }
+                .marquee-text {
+                display: inline-block;
+                padding-left: 100%;
+                animation: marquee 15s linear infinite;
+                }
+                @keyframes marquee {
+                0%   { transform: translate(0, 0); }
+                100% { transform: translate(-100%, 0); }
+                }
+            </style>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                console.log("📢 Script notification chargé");
+
+                const banner = document.getElementById('essai-banner');
+                if (!banner) {
+                    console.log("❌ Bannière non trouvée !");
+                    return;
+                }
+
+                const now = new Date();
+                const todayKey = `notif-shown-${now.toISOString().slice(0, 10)}`;
+                const notifCount = parseInt(localStorage.getItem(todayKey) || "0");
+
+                console.log(`🔁 Affichages aujourd’hui : ${notifCount}`);
+
+                if (notifCount < 5) {
+                    banner.style.display = 'block';
+                    localStorage.setItem(todayKey, notifCount + 1);
+
+                    setTimeout(function () {
+                    banner.remove();
+                    console.log("⏳ Bannière supprimée après 1 min");
+                    }, 60000);
+                } else {
+                    banner.style.display = 'none';
+                    console.log("🛑 Bannière masquée (limite atteinte)");
+                }
+                });
+            </script>
+            {% endif %}
+
             {% include 'administration/partials/header.html' %}
 
             <div class="container">
+                {# Affichage des messages Django (succès/erreur/avertissement) - Déplacé ici pour être global #}
+                {% if messages %}
+                <div class="mb-3 mt-3"> {# Ajout de marges pour un meilleur espacement #}
+                    {% for message_django in messages %}
+                    <div class="alert alert-{{ message_django.tags }} alert-dismissible fade show" role="alert">
+                        {{ message_django }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
                 {% block content %}
-                <!-- Contenu spécifique des autres pages ici -->
                 {% endblock %}
+            </div>
+
+            <div class="modal fade" id="logoutConfirmationModal" tabindex="-1" aria-labelledby="logoutConfirmationModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="logoutConfirmationModalLabel">Confirmer la déconnexion</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                        </div>
+                        <div class="modal-body">
+                            Êtes-vous sûr de vouloir vous déconnecter ?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                            <form action="{% url 'logout' %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">Se déconnecter</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             {% include 'administration/partials/footer.html' %}
         </div>
 
-        {% include 'administration/partials/theme.html' %}
+        {% if request.path == '/admin/dashboard/' or request.path == '/pharmacien/dashboard/' %}
+            {% include 'partials/theme.html' %}
+        {% endif %}
     </div>
+
+    {% block extra_js %}
+    {% endblock %}
 
     {% include 'administration/partials/javascript_section.html' %}
 
-    <div class="modal fade" id="logoutConfirmationModal" tabindex="-1" aria-labelledby="logoutConfirmationModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="logoutConfirmationModalLabel">Confirmer la déconnexion</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-                </div>
-                <div class="modal-body">
-                    Êtes-vous sûr de vouloir vous déconnecter ?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <form action="{% url 'pharmacien:logout' %}" method="post">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger">Se déconnecter</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+    {% if expiration_timestamp %}
+        <script>
+            const expirationTime = {{ expiration_timestamp }};   // en millisecondes
+            const now = Date.now();
+            const delay = expirationTime - now;
+
+            if (delay > 0) {
+                setTimeout(() => {
+                    // Redirection automatique vers la page d’abonnement
+                    window.location.href = "{% url 'abonnement:choix_mode_paiement' %}";
+                }, delay);
+            }
+        </script>
+    {% endif %}
+    
+    <script>
+        // Fonction utilitaire pour obtenir le temps écoulé (comme timesince de Django)
+        function timeSince(dateString) {
+            const date = new Date(dateString);
+            const seconds = Math.floor((new Date() - date) / 1000);
+
+            let interval = seconds / 31536000;
+            if (interval > 1) return Math.floor(interval) + " ans";
+            interval = seconds / 2592000;
+            if (interval > 1) return Math.floor(interval) + " mois";
+            interval = seconds / 86400;
+            if (interval > 1) return Math.floor(interval) + " jours";
+            interval = seconds / 3600;
+            if (interval > 1) return Math.floor(interval) + " heures";
+            interval = seconds / 60;
+            if (interval > 1) return Math.floor(interval) + " minutes";
+            return Math.floor(seconds) + " secondes";
+        }
+
+        // Fonction pour obtenir le cookie CSRF (réutilisée de vos précédents scripts)
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.startsWith(name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // --- Nouvelle fonction pour marquer un message comme lu via AJAX ---
+        function markMessageAsRead(messageId) {
+            const csrftoken = getCookie('csrftoken');
+            // Corrected URL: Use 'pharmacien_marquer_message_lu' for pharmacist
+            fetch("{% url 'gestion_notifications:pharmacien_marquer_message_lu' 0 %}".replace('0', messageId), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => { throw new Error(`HTTP error! status: ${response.status}, Body: ${text}`); });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    console.log(`Message ${messageId} marqué comme lu.`);
+                    const messageItem = document.querySelector(`.message-item[data-message-id="${messageId}"]`);
+                    if (messageItem) {
+                        messageItem.remove(); // Remove the element from the DOM
+                    }
+                    updateMessagesBadgeAndList(); // Recalculate badges after update
+                } else {
+                    console.error('Erreur lors du marquage du message comme lu:', data.message);
+                }
+            })
+            .catch(error => console.error('Erreur réseau ou serveur:', error));
+        }
+
+        // --- Nouvelle fonction pour marquer TOUS les messages comme lus via AJAX ---
+        function markAllMessagesAsRead() {
+            const csrftoken = getCookie('csrftoken');
+            // Corrected URL: Use 'pharmacien_marquer_tous_messages_lus' for pharmacist
+            fetch("{% url 'gestion_notifications:pharmacien_marquer_tous_messages_lus' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => { throw new Error(`HTTP error! status: ${response.status}, Body: ${text}`); });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    console.log('Tous les messages marqués comme lus.');
+                    const messagesListContainer = document.getElementById("messages-list");
+                    if (messagesListContainer) {
+                        messagesListContainer.innerHTML = '<div class="text-center p-3 text-muted">Aucun message non lu</div>';
+                    }
+                    updateMessagesBadgeAndList(); // Update the badge to 0
+                } else {
+                    console.error('Erreur lors du marquage de tous les messages comme lus:', data.message);
+                }
+            })
+            .catch(error => console.error('Erreur réseau ou serveur:', error));
+        }
+
+        // Fonction pour mettre à jour le badge et la liste des messages dans le dropdown
+        function updateMessagesBadgeAndList() {
+            // Fetch for message count (badge)
+            // Using the common URL name 'common_unread_messages_count' which is suitable for both roles.
+            fetch("{% url 'gestion_notifications:common_unread_messages_count' %}", {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            })
+            .then(response => {
+                if (!response.ok) return response.text().then(text => { throw new Error(`HTTP error! status: ${response.status}, Body: ${text}`); });
+                return response.json();
+            })
+            .then(data => {
+                const badge = document.getElementById("messages-badge");
+                if (data.unread_count > 0) {
+                    if (badge) {
+                        badge.textContent = data.unread_count;
+                        badge.style.display = 'inline-block';
+                    } else {
+                        // If badge does not exist yet, create and append it
+                        const messageDropdownLink = document.getElementById("messageDropdown");
+                        if (messageDropdownLink) {
+                            const newBadge = document.createElement("span");
+                            newBadge.id = "messages-badge";
+                            newBadge.className = "badge badge-danger";
+                            newBadge.textContent = data.unread_count;
+                            messageDropdownLink.appendChild(newBadge);
+                        }
+                    }
+                } else {
+                    if (badge) badge.style.display = 'none';
+                }
+            })
+            .catch(error => console.error("Erreur lors de la récupération du nombre de messages non lus:", error));
+
+            // Fetch for message list (dropdown)
+            // Using the common URL name 'common_recent_unread_messages' which is suitable for both roles.
+            fetch("{% url 'gestion_notifications:common_recent_unread_messages' %}", {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            })
+            .then(response => {
+                if (!response.ok) return response.text().then(text => { throw new Error(`HTTP error! status: ${response.status}, Body: ${text}`); });
+                return response.json();
+            })
+            .then(data => {
+                const messagesListContainer = document.getElementById("messages-list");
+                const markAllReadLink = document.getElementById("mark-all-messages-read");
+
+                if (messagesListContainer) {
+                    messagesListContainer.innerHTML = ''; // Clear current content
+
+                    if (data.messages && data.messages.length > 0) {
+                        data.messages.forEach(msg => {
+                            const messageItem = document.createElement('a');
+                            messageItem.href = "{% url 'gestion_notifications:pharmacien_detail_message' 0 %}".replace('0', msg.id); // Direct link to detail
+                            messageItem.className = "message-item notification-item";
+                            messageItem.dataset.messageId = msg.id; // Store message ID
+                            
+                            // Attach event listener to mark as read when clicked and navigate
+                            messageItem.addEventListener('click', function(event) {
+                                // event.preventDefault(); // Don't prevent default, allow navigation after marking as read
+                                const clickedMessageId = this.dataset.messageId;
+                                const originalHref = this.href; // Get the href to navigate later
+
+                                // Mark message as read via AJAX first
+                                const csrftoken = getCookie('csrftoken');
+                                fetch("{% url 'gestion_notifications:pharmacien_marquer_message_lu' 0 %}".replace('0', clickedMessageId), {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRFToken': csrftoken
+                                    }
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.status === 'success') {
+                                        console.log(`Message ${clickedMessageId} marked as read.`);
+                                        updateMessagesBadgeAndList(); // Update badge and list
+                                        window.location.href = originalHref; // Navigate after success
+                                    } else {
+                                        console.error('Error marking message as read:', data.message);
+                                        window.location.href = originalHref; // Navigate even on error
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Network or server error:', error);
+                                    window.location.href = originalHref; // Navigate on network error
+                                });
+                            });
+
+                            messageItem.innerHTML = `
+                                <div class="notif-img"><i class="fas fa-envelope"></i></div>
+                                <div class="notif-content">
+                                    <span class="subject fw-bold">${msg.expediteur_nom}</span>
+                                    <span class="block">${msg.sujet.substring(0, 30)}${msg.sujet.length > 30 ? '...' : ''}</span>
+                                    <span class="time text-muted">${timeSince(msg.date_envoye)}</span>
+                                </div>
+                            `;
+                            messagesListContainer.appendChild(messageItem);
+                        });
+                        if (markAllReadLink) markAllReadLink.style.display = 'inline'; // Show "Mark all as read" link
+                    } else {
+                        messagesListContainer.innerHTML = '<div class="text-center p-3 text-muted">Aucun message non lu</div>';
+                        if (markAllReadLink) markAllReadLink.style.display = 'none'; // Hide the link
+                    }
+                }
+            })
+            .catch(error => console.error("Erreur lors de la récupération des messages récents:", error));
+        }
+
+
+        // --- Attach event listener for the "Mark all as read" link ---
+        document.addEventListener("DOMContentLoaded", function() {
+            const markAllReadLink = document.getElementById("mark-all-messages-read");
+            if (markAllReadLink) {
+                markAllReadLink.addEventListener('click', function(event) {
+                    event.preventDefault(); // Prevent default link behavior
+                    markAllMessagesAsRead();
+                    // Optional: close dropdown
+                    // var bsDropdown = new bootstrap.Dropdown(document.getElementById('messageDropdown'));
+                    // bsDropdown.hide();
+                });
+            }
+        });
+
+        // Call the function on page load to initialize badge and list
+        document.addEventListener("DOMContentLoaded", updateMessagesBadgeAndList);
+
+        // Call the function every 30 seconds for dynamic updates
+        setInterval(updateMessagesBadgeAndList, 30000); // 30000 ms = 30 seconds
+    </script>
 </body>
+
 </html>
