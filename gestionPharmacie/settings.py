@@ -181,10 +181,10 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'mahawacamaracamara278@gmail.com'
-EMAIL_HOST_PASSWORD = 'tbuakiwhfqjdtann'
-DEFAULT_FROM_EMAIL = 'PharmaConnect <mahawacamaracamara278@gmail.com>'
-CONTACT_RECEIVER_EMAIL = 'pharmaconnect200@gmail.com'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
+CONTACT_RECEIVER_EMAIL = os.getenv('CONTACT_RECEIVER_EMAIL')
 
 # --------------------------------------------------
 # 💬 MESSAGES DJANGO
