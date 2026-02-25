@@ -7,18 +7,6 @@
     <i class="fa fa-cogs"></i> Gestion des produits
 </h1>
 
-<!-- Messages -->
-{% if messages %}
-<div class="alert-container">
-    {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-            <strong>{{ message }}</strong>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
-        </div>
-    {% endfor %}
-</div>
-{% endif %}
-
 <!-- Barre de recherche -->
 <form method="GET" class="mb-2">
     <div class="input-group">
@@ -50,71 +38,62 @@
         <tr>
             <th>Nom</th>
             <th>Type</th>
-            <th>Description</th>
+            <th>Forme</th>
+            <th>Dosage</th>
             <th>Prix</th>
             <th>Pharmacie</th>
             <th style="width: 180px;">Actions</th>
         </tr>
     </thead>
     <tbody>
-        {% for product in page_obj %}
+        {% for dispo in page_obj %}
         <tr>
-            <td>{{ product.name }}</td>
-            <td>{{ product.type }}</td>
-            <td>{{ product.description|truncatewords:10 }}</td>
-            <td>{{ product.availabilities.first.price }} FNG</td>
-            <td>{{ product.created_by.pharmacy_name }}</td>
+            <td>{{ dispo.product.name }}</td>
+            <td>{{ dispo.product.type }}</td>
+            <td>{{ dispo.form.name }}</td>
+            <td>{{ dispo.dosage }}</td>
+            <td>{{ dispo.price }} FNG</td>
+            <td>{{ dispo.pharmacy.pharmacy_name }}</td>
             <td>
-                <!-- Voir Détails -->
-                <button class="btn btn-info btn-sm me-1" data-bs-toggle="modal" data-bs-target="#detailsModal{{ product.id }}">
+                <button class="btn btn-info btn-sm me-1" data-bs-toggle="modal" data-bs-target="#detailsModal{{ dispo.id }}">
                     <i class="fa fa-eye"></i>
                 </button>
-
-                <!-- Supprimer -->
-                <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ product.id }}">
+                <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ dispo.id }}">
                     <i class="fa fa-trash"></i>
                 </button>
             </td>
         </tr>
 
         <!-- Modal Détails -->
-        <div class="modal fade" id="detailsModal{{ product.id }}" tabindex="-1">
+        <div class="modal fade" id="detailsModal{{ dispo.id }}" tabindex="-1">
             <div class="modal-dialog modal-md modal-dialog-centered">
                 <div class="modal-content shadow-lg">
                     <div class="modal-header bg-primary text-white">
                         <h5 class="modal-title">
-                            <i class="fa fa-info-circle me-2"></i>Détails de : {{ product.name }}
+                            <i class="fa fa-info-circle me-2"></i>Détails de : {{ dispo.product.name }}
                         </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
                     </div>
                     <div class="modal-body">
                         <div class="row">
-                            <!-- Image à gauche -->
                             <div class="col-md-5 text-center mb-3">
-                                {% if product.image %}
-                                    <img src="{{ product.image.url }}" alt="Image" class="img-fluid rounded shadow" style="max-height: 180px;">
+                                {% if dispo.product.image %}
+                                    <img src="{{ dispo.product.image.url }}" alt="Image" class="img-fluid rounded shadow" style="max-height: 180px;">
                                 {% else %}
                                     <div class="text-muted fst-italic">Aucune image</div>
                                 {% endif %}
                             </div>
-
-                            <!-- Infos à droite -->
                             <div class="col-md-7">
-                                <p><strong>Type :</strong> {{ product.type }}</p>
-                                <p><strong>Description :</strong> {{ product.description }}</p>
-                                <p><strong>Utilisation :</strong> {{ product.usage_mode }}</p>
-                                <p><strong>Posologie :</strong> {{ product.posology }}</p>
-                                <p><strong>Expiration :</strong> {{ product.expiration_date|date:"m/Y" }}</p>
-                                <p><strong>Ajouté le :</strong> {{ product.created_at|date:"d/m/Y" }}</p>
+                                <p><strong>Type :</strong> {{ dispo.product.type }}</p>
+                                <p><strong>Description :</strong> {{ dispo.product.description }}</p>
+                                <p><strong>Utilisation :</strong> {{ dispo.product.usage_mode }}</p>
+                                <p><strong>Posologie :</strong> {{ dispo.product.posology }}</p>
+                                <p><strong>Expiration :</strong> {{ dispo.product.expiration_date|date:"m/Y" }}</p>
                                 <hr class="my-2">
-                                <p><strong>Disponibilités :</strong></p>
-                                <ul class="ps-3">
-                                    {% for dispo in product.availabilities.all %}
-                                        <li>{{ dispo.form.name }} - {{ dispo.dosage }} : {{ dispo.price }} FNG</li>
-                                    {% empty %}
-                                        <li class="text-muted fst-italic">Non disponible</li>
-                                    {% endfor %}
-                                </ul>
+                                <p><strong>Forme :</strong> {{ dispo.form.name }}</p>
+                                <p><strong>Dosage :</strong> {{ dispo.dosage }}</p>
+                                <p><strong>Prix :</strong> {{ dispo.price }} FNG</p>
+                                <p><strong>Pharmacie :</strong> {{ dispo.pharmacy.pharmacy_name }}</p>
                             </div>
                         </div>
                     </div>
@@ -124,8 +103,9 @@
                 </div>
             </div>
         </div>
+
         <!-- Modal Suppression -->
-        <div class="modal fade" id="deleteModal{{ product.id }}" tabindex="-1">
+        <div class="modal fade" id="deleteModal{{ dispo.id }}" tabindex="-1">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content shadow">
                     <div class="modal-header bg-danger text-white">
@@ -133,10 +113,10 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        Êtes-vous sûr de vouloir supprimer <strong>{{ product.name }}</strong> ?
+                        Supprimer <strong>{{ dispo.product.name }}</strong> de cette pharmacie ?
                     </div>
                     <div class="modal-footer">
-                        <form method="post" action="{% url 'administration:delete_product' product.id %}">
+                        <form method="post" action="{% url 'administration:delete_product' dispo.id %}">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-danger">Oui, supprimer</button>
                         </form>
@@ -145,7 +125,6 @@
                 </div>
             </div>
         </div>
-
         {% endfor %}
     </tbody>
 </table>

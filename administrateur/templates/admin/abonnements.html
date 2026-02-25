@@ -10,18 +10,6 @@
     <i class="fa fa-credit-card me-2 fs-3"></i>Gestion des abonnements
   </h1>
 
-  <!-- Messages -->
-  {% if messages %}
-    <div class="mb-3">
-      {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm" role="alert">
-          <i class="fa fa-info-circle me-1"></i> {{ message }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
-        </div>
-      {% endfor %}
-    </div>
-  {% endif %}
-
   <!-- Boutons actions -->
   <div class="d-flex justify-content-end mb-3 gap-2">
     <a href="{% url 'administration:export_abonnements_excel' %}" class="btn btn-success btn-sm">

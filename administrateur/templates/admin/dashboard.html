@@ -3,13 +3,18 @@
 {% block title %}Tableau de bord{% endblock %}
 
 {% block content %}
-<!-- Tableau de bord -->
 <div class="container-fluid py-4">
     <h1 class="h2 mb-4 text-primary">Tableau de bord</h1>
 
-    <!-- Cartes d'affichage des statistiques -->
+    <!-- Bouton d'impression -->
+    <div class="d-flex justify-content-end px-4 no-print">
+        <button class="btn btn-secondary mb-3" onclick="window.print()">
+            🖨️ Imprimer le tableau de bord
+        </button>
+    </div>
+
+    <!-- Cartes de statistiques -->
     <div class="row mb-4">
-        <!-- Carte Pharmacies -->
         <div class="col-lg-3 col-md-6">
             <div class="card shadow-sm border-0 rounded-3">
                 <div class="card-body">
@@ -20,18 +25,16 @@
             </div>
         </div>
 
-        <!-- Carte Produits -->
         <div class="col-lg-3 col-md-6">
             <div class="card shadow-sm border-0 rounded-3">
                 <div class="card-body">
-                    <i class="fa fa-capsules fa-3x text-info"></i>
+                    <i class="fa fa-boxes fa-3x text-info"></i>
                     <h5 class="card-title text-center">Produits</h5>
                     <h3 class="text-center">{{ produits }}</h3>
                 </div>
             </div>
         </div>
 
-        <!-- Carte Utilisateurs -->
         <div class="col-lg-3 col-md-6">
             <div class="card shadow-sm border-0 rounded-3">
                 <div class="card-body">
@@ -42,7 +45,6 @@
             </div>
         </div>
 
-        <!-- Carte Abonnements -->
         <div class="col-lg-3 col-md-6">
             <div class="card shadow-sm border-0 rounded-3">
                 <div class="card-body">
@@ -54,11 +56,10 @@
         </div>
     </div>
 
-    <!-- Section Graphiques -->
+    <!-- Graphiques -->
     <h3 class="mb-4 text-secondary">Statistiques de la dernière semaine</h3>
 
     <div class="row">
-        <!-- Graphique Pharmacies -->
         <div class="col-md-4 mb-4">
             <div class="card shadow-sm border-0 rounded-3">
                 <div class="card-body">
@@ -68,17 +69,15 @@
             </div>
         </div>
 
-        <!-- Graphique Produits -->
         <div class="col-md-4 mb-4">
             <div class="card shadow-sm border-0 rounded-3">
                 <div class="card-body">
-                    <h5 class="card-title">Produits par semaine</h5>
+                    <h5 class="card-title">Disponibilités par semaine</h5>
                     <canvas id="productChart"></canvas>
                 </div>
             </div>
         </div>
 
-        <!-- Graphique Abonnements -->
         <div class="col-md-4 mb-4">
             <div class="card shadow-sm border-0 rounded-3">
                 <div class="card-body">
@@ -90,89 +89,101 @@
     </div>
 </div>
 
+<!-- Styles pour impression -->
+<style>
+@media print {
+    .no-print, nav, header, footer, .sidebar {
+        display: none !important;
+    }
+
+    .chart-print-image {
+        max-width: 100%;
+        margin: 1rem auto;
+        display: block;
+    }
+
+    canvas {
+        display: none !important;
+    }
+
+    .card {
+        page-break-inside: avoid;
+    }
+}
+</style>
+
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Graphique Pharmacies
-    const pharmacyCtx = document.getElementById('pharmacyChart').getContext('2d');
-    new Chart(pharmacyCtx, {
-        type: 'pie',
-        data: {
-            labels: {{ pharmacy_data.labels|safe }},
-            datasets: [{
-                label: 'Pharmacies',
-                data: {{ pharmacy_data.data|safe }},
-                backgroundColor: ['#007BFF', '#00BFFF', '#5C6BC0', '#3D5AFE', '#1976D2'],
-                borderColor: ['#007BFF', '#00BFFF', '#5C6BC0', '#3D5AFE', '#1976D2'],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-                tooltip: {
-                    enabled: true
-                }
-            }
-        }
-    });
+const pharmacyCtx = document.getElementById('pharmacyChart').getContext('2d');
+const productCtx = document.getElementById('productChart').getContext('2d');
+const subscriptionCtx = document.getElementById('subscriptionChart').getContext('2d');
 
-    // Graphique Produits
-    const productCtx = document.getElementById('productChart').getContext('2d');
-    new Chart(productCtx, {
-        type: 'pie',
-        data: {
-            labels: {{ product_data.labels|safe }},
-            datasets: [{
-                label: 'Produits',
-                data: {{ product_data.data|safe }},
-                backgroundColor: ['#42A5F5', '#1E88E5', '#1976D2', '#1565C0', '#0D47A1'],
-                borderColor: ['#42A5F5', '#1E88E5', '#1976D2', '#1565C0', '#0D47A1'],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-                tooltip: {
-                    enabled: true
-                }
-            }
-        }
-    });
+const pharmacyChart = new Chart(pharmacyCtx, {
+    type: 'pie',
+    data: {
+        labels: {{ pharmacy_data.labels|safe }},
+        datasets: [{
+            label: 'Pharmacies',
+            data: {{ pharmacy_data.data|safe }},
+            backgroundColor: ['#007BFF', '#00BFFF', '#5C6BC0', '#3D5AFE', '#1976D2']
+        }]
+    },
+    options: { responsive: true }
+});
 
-    // Graphique Abonnements
-    const subscriptionCtx = document.getElementById('subscriptionChart').getContext('2d');
-    new Chart(subscriptionCtx, {
-        type: 'pie',
-        data: {
-            labels: {{ subscription_data.labels|safe }},
-            datasets: [{
-                label: 'Abonnements',
-                data: {{ subscription_data.data|safe }},
-                backgroundColor: ['#66BB6A', '#81C784', '#A5D6A7'],
-                borderColor: ['#66BB6A', '#81C784', '#A5D6A7'],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-                tooltip: {
-                    enabled: true
+const productChart = new Chart(productCtx, {
+    type: 'pie',
+    data: {
+        labels: {{ product_data.labels|safe }},
+        datasets: [{
+            label: 'Disponibilités',
+            data: {{ product_data.data|safe }},
+            backgroundColor: ['#42A5F5', '#1E88E5', '#1976D2', '#1565C0']
+        }]
+    },
+    options: { responsive: true }
+});
+
+const subscriptionChart = new Chart(subscriptionCtx, {
+    type: 'pie',
+    data: {
+        labels: {{ subscription_data.labels|safe }},
+        datasets: [{
+            label: 'Abonnements',
+            data: {{ subscription_data.data|safe }},
+            backgroundColor: ['#66BB6A', '#81C784', '#A5D6A7']
+        }]
+    },
+    options: { responsive: true }
+});
+
+// Impression : canvas -> image
+document.addEventListener("DOMContentLoaded", function () {
+    const canvasToImage = (canvas) => {
+        const img = document.createElement("img");
+        img.src = canvas.toDataURL("image/png");
+        img.className = "chart-print-image img-fluid my-3";
+        canvas.parentNode.insertBefore(img, canvas.nextSibling);
+    };
+
+    window.onbeforeprint = () => {
+        setTimeout(() => {
+            document.querySelectorAll("canvas").forEach(canvas => {
+                if (!canvas.nextElementSibling || !canvas.nextElementSibling.classList.contains("chart-print-image")) {
+                    canvasToImage(canvas);
                 }
-            }
-        }
-    });
+                canvas.style.display = "none";
+            });
+        }, 500);
+    };
+
+    window.onafterprint = () => {
+        document.querySelectorAll(".chart-print-image").forEach(img => img.remove());
+        document.querySelectorAll("canvas").forEach(canvas => {
+            canvas.style.display = "block";
+        });
+    };
+});
 </script>
-
 {% endblock %}

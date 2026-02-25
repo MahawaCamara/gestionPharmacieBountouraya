@@ -1,7 +1,7 @@
-{% extends "baseInterface.html" %} 
-{% load widget_tweaks %} 
-{% load static %} 
-{%block contenu %}
+{% extends "baseInterface.html" %}
+{% load widget_tweaks %}
+{% load static %}
+{% block contenu %}
 <link
   rel="stylesheet"
   href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
@@ -56,9 +56,9 @@
           <strong>Dosage :</strong> {{ availability.dosage }}<br />
           <strong>Prix :</strong> {{ availability.price }} FNG
         </div>
-        <small class="text-muted"
-          >🏥 Pharmacie : {{ availability.pharmacy.pharmacy_name }}</small
-        >
+        <small class="text-muted">
+          🏥 Pharmacie : {{ availability.pharmacy.pharmacy_name }}
+        </small>
       </li>
       {% endfor %}
     </ul>
@@ -69,15 +69,23 @@
     {% endif %}
   </div>
 
-  <button
-    type="button"
-    class="btn btn-outline-primary"
-    data-bs-toggle="modal"
-    data-bs-target="#contactModal"
-  >
-    Contacter le pharmacien
-  </button>
+  <!-- 🔁 Nouveau bloc aligné proprement -->
+  <div class="d-flex justify-content-center gap-4 mt-4 animate__animated animate__fadeInUp animate__delay-2s">
+    <button
+      type="button"
+      class="btn btn-outline-primary px-4"
+      data-bs-toggle="modal"
+      data-bs-target="#contactModal"
+    >
+      📩 Contacter le pharmacien
+    </button>
 
+    <a href="{% url 'home' %}" class="btn btn-outline-secondary px-4">
+      ⬅️ Retour à la recherche
+    </a>
+  </div>
+
+  <!-- Modale de contact -->
   <div
     class="modal fade"
     id="contactModal"
@@ -103,21 +111,21 @@
           <div class="modal-body bg-light">
             <div class="form-floating mb-3">
               {{ form.nom|add_class:"form-control" }}
-              <label for="{{ form.nom.id_for_label }}"
-                >{{ form.nom.label }}</label
-              >
+              <label for="{{ form.nom.id_for_label }}">
+                {{ form.nom.label }}
+              </label>
             </div>
             <div class="form-floating mb-3">
               {{ form.email|add_class:"form-control" }}
-              <label for="{{ form.email.id_for_label }}"
-                >{{ form.email.label }}</label
-              >
+              <label for="{{ form.email.id_for_label }}">
+                {{ form.email.label }}
+              </label>
             </div>
             <div class="form-floating">
               {{ form.message|add_class:"form-control" }}
-              <label for="{{ form.message.id_for_label }}"
-                >{{ form.message.label }}</label
-              >
+              <label for="{{ form.message.id_for_label }}">
+                {{ form.message.label }}
+              </label>
             </div>
           </div>
           <div class="modal-footer bg-light">
@@ -135,6 +143,7 @@
     </div>
   </div>
 
+  <!-- Toast Notification -->
   <div class="toast-container position-fixed bottom-0 end-0 p-3">
     <div
       id="toastNotification"
@@ -154,110 +163,78 @@
       </div>
     </div>
   </div>
-
-  <!-- Champ de recherche caché -->
-  <div class="text-center my-4">
-    <input
-      type="text"
-      id="searchInput"
-      class="form-control d-none mx-auto"
-      placeholder="Rechercher un produit..."
-      style="max-width: 400px"
-    />
-  </div>
-
-  <div
-    class="text-center mt-4 animate__animated animate__fadeInUp animate__delay-2s"
-  >
-    <a href="{% url 'home' %}" class="btn btn-outline-primary px-4 py-2">
-      ⬅️ Retour à la recherche
-    </a>
-  </div>
 </div>
+
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-  const form = document.getElementById("contactFormAjax");
-  const submitBtn = form.querySelector('button[type="submit"]');
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("contactFormAjax");
+    const submitBtn = form.querySelector('button[type="submit"]');
 
-  form.addEventListener("submit", function (e) {
-    e.preventDefault();
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      submitBtn.disabled = true;
+      submitBtn.innerText = "Envoi...";
 
-    // Désactiver le bouton pour éviter les doubles clics
-    submitBtn.disabled = true;
-    submitBtn.innerText = "Envoi...";
-
-    const formData = new FormData(form);
-
-    fetch("", {
-      method: "POST",
-      headers: {
-        "X-Requested-With": "XMLHttpRequest"
-      },
-      body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.status === "success") {
-        // Fermer la modale immédiatement
-        const modal = bootstrap.Modal.getInstance(document.getElementById("contactModal"));
-        if (modal) modal.hide();
-
-        // Réinitialiser le formulaire
-        form.reset();
-
-        // ✅ Affiche un message furtif (en arrière-plan)
-        Swal.fire({
-          toast: true,
-          position: 'top-end',
-          icon: 'success',
-          title: 'Message envoyé',
-          showConfirmButton: false,
-          timer: 1500
-        });
-
-        // ✅ Recharge immédiate de la page
-        location.reload();
-
-      } else if (data.status === "warning") {
-        Swal.fire({
-          icon: "warning",
-          title: "Attention",
-          text: data.message,
-          confirmButtonColor: '#f39c12'
-        });
-      } else {
-        let errorMsg = "Une erreur est survenue.";
-        if (data.message && typeof data.message === 'object') {
-          errorMsg = Object.values(data.message).flat().join(' ');
+      const formData = new FormData(form);
+      fetch("", {
+        method: "POST",
+        headers: {
+          "X-Requested-With": "XMLHttpRequest"
+        },
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === "success") {
+          const modal = bootstrap.Modal.getInstance(document.getElementById("contactModal"));
+          if (modal) modal.hide();
+          form.reset();
+          Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: 'Message envoyé',
+            showConfirmButton: false,
+            timer: 1500
+          });
+          location.reload();
+        } else if (data.status === "warning") {
+          Swal.fire({
+            icon: "warning",
+            title: "Attention",
+            text: data.message,
+            confirmButtonColor: '#f39c12'
+          });
+        } else {
+          let errorMsg = "Une erreur est survenue.";
+          if (data.message && typeof data.message === 'object') {
+            errorMsg = Object.values(data.message).flat().join(' ');
+          }
+          Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: errorMsg,
+            confirmButtonColor: '#e74c3c'
+          });
         }
+      })
+      .catch(error => {
+        console.error("Erreur AJAX :", error);
         Swal.fire({
           icon: 'error',
-          title: 'Erreur',
-          text: errorMsg,
+          title: 'Erreur réseau',
+          text: "Impossible d'envoyer le message. Veuillez réessayer.",
           confirmButtonColor: '#e74c3c'
         });
-      }
-    })
-    .catch(error => {
-      console.error("Erreur AJAX :", error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Erreur réseau',
-        text: "Impossible d'envoyer le message. Veuillez réessayer.",
-        confirmButtonColor: '#e74c3c'
+      })
+      .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Envoyer";
       });
-    })
-    .finally(() => {
-      // Réactiver le bouton
-      submitBtn.disabled = false;
-      submitBtn.innerText = "Envoyer";
     });
   });
-});
 </script>
 {% endblock %}
 {% endblock %}
-

@@ -39,12 +39,12 @@
                         <div class="flex-grow-1">
                             <div class="fw-bold text-dark mb-1">{{ notif.titre }}</div>
                             <div class="text-muted small mb-1">{{ notif.message|truncatechars:150 }}</div>
-                            <small class="text-secondary">{{ notif.created_at|timesince }} ago</small>
+                            <small class="text-secondary">{{ notif.created_at|timesince }} </small>
                         </div>
 
                         <div class="text-end">
                             {% if not notif.lu %}
-                                <a href="{% url 'gestion_notifications:pharmacien_marquer_comme_lue' notif.id %}" class="btn btn-sm btn-outline-success mb-1">
+                                <a href="{% url 'gestion_notifications:pharmacien_mark_notification_as_read' notif.id %}" class="btn btn-sm btn-outline-success mb-1">
                                     ✔ Marquer comme lu
                                 </a><br>
                             {% endif %}

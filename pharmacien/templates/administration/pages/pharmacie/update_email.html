@@ -1,0 +1,27 @@
+{% extends 'administration/base.html' %}
+{% load static %}
+{% block content %}
+<div class="container mt-5" style="max-width: 500px;">
+    <h2 class="text-primary text-center mb-4"><i class="bi bi-envelope-fill me-2"></i> Modifier mon adresse email</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="mb-3">
+            {{ form.email.label_tag }}
+            {{ form.email }}
+            {% if form.email.errors %}
+                <div class="text-danger small">{{ form.email.errors }}</div>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Enregistrer</button>
+        <a href="{% url 'pharmacien:profile' %}" class="btn btn-secondary w-100 mt-2">Annuler</a>
+    </form>
+</div>
+{% endblock %}

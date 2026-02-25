@@ -43,27 +43,27 @@ def paginate(request, queryset, per_page=5):
 def dashboard(request):
     # Comptage des éléments
     pharmacies = Pharmacy.objects.count()
-    produits = Product.objects.count()
+    produits = ProductAvailability.objects.count()  # ✅ correction ici
     utilisateurs = User.objects.count()
     abonnements = Abonnement.objects.count()
 
     # Récupérer la date actuelle
     now = timezone.now()
-    week_start = now - timedelta(weeks=1)  # Dernière semaine uniquement
+    week_start = now - timedelta(weeks=1)
 
     # Données pharmacies par semaine
     pharmacy_data = (
         Pharmacy.objects.filter(created_at__gte=week_start)
-        .annotate(week=TruncWeek('created_at'))  # Utilisation de TruncWeek pour regrouper par semaine
+        .annotate(week=TruncWeek('created_at'))
         .values('week')
         .annotate(count=Count('id'))
         .order_by('week')
     )
 
-    # Données produits par semaine
+    # ✅ Données produits à partir de ProductAvailability, pas Product
     product_data = (
-        Product.objects.filter(created_at__gte=week_start)
-        .annotate(week=TruncWeek('created_at'))  # Utilisation de TruncWeek pour regrouper par semaine
+        ProductAvailability.objects.filter(created_at__gte=week_start)
+        .annotate(week=TruncWeek('created_at'))
         .values('week')
         .annotate(count=Count('id'))
         .order_by('week')
@@ -72,39 +72,37 @@ def dashboard(request):
     # Données abonnements par semaine
     subscription_data = (
         Abonnement.objects.filter(date_debut__gte=week_start)
-        .annotate(week=TruncWeek('date_debut'))  # Utilise TruncWeek pour regrouper par semaine
+        .annotate(week=TruncWeek('date_debut'))
         .values('week')
         .annotate(count=Count('id'))
         .order_by('week')
     )
 
-    # Fonction pour préparer les données pour Chart.js
     def prepare_chart_data(data):
-        # Format des dates de fin de semaine
-        labels = [entry['week'].strftime('%Y-%m-%d') for entry in data]  # Format YYYY-MM-DD
+        labels = [entry['week'].strftime('%Y-%m-%d') for entry in data]
         counts = [entry['count'] for entry in data]
         return {'labels': labels, 'data': counts}
 
-    # Préparer les données pour chaque graphique
     pharmacy_data = prepare_chart_data(pharmacy_data)
     product_data = prepare_chart_data(product_data)
     subscription_data = prepare_chart_data(subscription_data)
 
-    # Affichage du tableau de bord
     return render(request, "admin/dashboard.html", {
         "pharmacies": pharmacies,
-        "produits": produits,
+        "produits": produits,  # ✅ déjà modifié
         "utilisateurs": utilisateurs,
         "abonnements": abonnements,
         "pharmacy_data": pharmacy_data,
         "product_data": product_data,
         "subscription_data": subscription_data,
     })
-  
+
 # Vue d'envoie d'emails aux users bloqués
 def send_pharmacy_notification(pharmacy, subject, html_message):
-    recipient = pharmacy.email  # 👈 email du pharmacien
+    recipient = pharmacy.email
     plain_message = strip_tags(html_message)
+    print(f"[ENVOI EMAIL] Destinataire : {recipient}")  # Debug
+
     send_mail(
         subject=subject,
         message=plain_message,
@@ -113,7 +111,7 @@ def send_pharmacy_notification(pharmacy, subject, html_message):
         html_message=html_message,
         fail_silently=False
     )
-  
+    
 ###### Vue pour lister toutes les pharmacies ######    
 @login_required
 @admin_required
@@ -289,39 +287,33 @@ def manage_products(request):
     search_term = request.GET.get('search', '')
     filter_by = request.GET.get('filter_by', '')
 
-    # Filtrage selon le choix de l'utilisateur
-    if filter_by == 'name':
-        produits = Product.objects.filter(name__icontains=search_term)
-    elif filter_by == 'type':
-        produits = Product.objects.filter(type__icontains=search_term)
-    elif filter_by == 'price':
-        produits = Product.objects.filter(price__icontains=search_term)  # On pourrait ajouter un filtre pour le prix si nécessaire
-    else:
-        produits = Product.objects.all()
+    # Recherche sur ProductAvailability, joint avec Product
+    query = Q()
+    if search_term:
+        if filter_by == 'name':
+            query = Q(product__name__icontains=search_term)
+        elif filter_by == 'type':
+            query = Q(product__type__icontains=search_term)
+        elif filter_by == 'price':
+            query = Q(price__icontains=search_term)
+        else:
+            # Recherche globale sur nom ou type si pas de filtre
+            query = Q(product__name__icontains=search_term) | Q(product__type__icontains=search_term)
 
-    # Pagination (5 produits par page)
-    paginator = Paginator(produits, 5)
+    disponibilites = ProductAvailability.objects.select_related('product', 'form', 'pharmacy')\
+                                                .filter(query)\
+                                                .order_by('-id')
+
+    # Pagination (5 éléments par page)
+    paginator = Paginator(disponibilites, 5)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    # Ajouter le prix du produit depuis ProductAvailability
-    product_data = []
-    for product in page_obj:
-        # Obtenir le prix associé au produit à partir de ProductAvailability
-        availability = ProductAvailability.objects.filter(product=product).first()
-        price = availability.price if availability else "N/A"
-        product_data.append({
-            'product': product,
-            'price': price,
-        })
-
     return render(request, "admin/produits.html", {
         "page_obj": page_obj,
-        "product_data": product_data,
         "search_term": search_term,
         "filter_by": filter_by,
     })
-
 ############ Vue pour supprimer un produit  ############
 @login_required
 @admin_required
@@ -690,6 +682,7 @@ def block_user(request, user_id):
                     <p>Cordialement,<br><strong>L'équipe PharmaConnect</strong></p>
                 </div>
             """
+            print(f"ENVOI À : {pharmacy.email}")  # Debug
             send_pharmacy_notification(pharmacy, subject, html_message)
 
     # Rediriger selon l'origine

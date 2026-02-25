@@ -4,7 +4,7 @@
     <div class="notif-content">
       <span class="fw-bold">{{ notif.titre }}</span>
       <p class="small">{{ notif.message|truncatechars:50 }}</p>
-      <span class="text-muted small">{{ notif.created_at|timesince }} ago</span> {# Note: Assurez-vous que 'created_at' est le bon champ de date/heure #}
+      <span class="text-muted small">{{ notif.created_at|timesince }} </span> {# Note: Assurez-vous que 'created_at' est le bon champ de date/heure #}
     </div>
   </a>
 {% empty %}

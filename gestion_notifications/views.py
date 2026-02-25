@@ -576,7 +576,7 @@ def tout_supprimer_notifications(request):
     except Pharmacy.DoesNotExist:
         dj_messages.error(request, "Impossible de supprimer les notifications : aucune pharmacie associée.")
         
-    return redirect('gestion_notifications:pharmacien_notifications')
+    return redirect('gestion_notifications:pharmacien_toutes_les_notifications')
 
 @login_required
 def marquer_comme_lue(request, pk):
@@ -597,7 +597,7 @@ def marquer_comme_lue(request, pk):
     except Notification.DoesNotExist:
         dj_messages.error(request, "Notification introuvable ou non autorisée.")
         
-    return redirect('gestion_notifications:pharmacien_notifications')
+    return redirect('gestion_notifications:pharmacien_toutes_les_notifications')
 
 @login_required
 def marquer_toutes_comme_lues(request):

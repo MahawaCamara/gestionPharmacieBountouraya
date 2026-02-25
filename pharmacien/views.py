@@ -205,25 +205,28 @@ def confirm_sensitive_change(request, token):
 def verify_sensitive_code(request):
     if request.method == 'POST':
         input_code = request.POST.get('code')
-        try:
-            pending = PendingSensitiveChange.objects.get(user=request.user, is_confirmed=False)
-        except PendingSensitiveChange.DoesNotExist:
-            messages.error(request, "Aucune demande en attente.")
-            return redirect('pharmacien:profile')
+
+        pending = PendingSensitiveChange.objects.filter(
+            user=request.user,
+            is_confirmed=False,
+            code=input_code
+        ).first()
+
+        if not pending:
+            messages.error(request, "Code incorrect ou aucune demande en attente.")
+            return redirect('pharmacien:verify_sensitive_code')
 
         if pending.is_expired():
             pending.delete()
             messages.error(request, "Le code a expiré. Veuillez recommencer.")
             return redirect('pharmacien:sensitive_change_form')
 
-        if pending.code != input_code:
-            messages.error(request, "Code incorrect.")
-            return redirect('pharmacien:verify_sensitive_code')
-
         # Appliquer les changements
         user = request.user
-        user.email = pending.new_email
-        user.password = pending.new_password
+        if pending.new_email:
+            user.email = pending.new_email
+        if pending.new_password:
+            user.set_password(pending.new_password)  # sécuritaire
         user.save()
 
         pending.is_confirmed = True

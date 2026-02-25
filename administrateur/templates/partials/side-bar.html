@@ -46,7 +46,7 @@
                 <li class="nav-item {% if request.resolver_match.url_name == 'manage_pharmacies' %}active{% endif %}">
                     <a href="{% url 'administration:manage_pharmacies' %}">
                         <i class="fa fa-user-md"></i>
-                        <p>Pharmaciens</p>
+                        <p>Pharmacies</p>
                     </a>
                 </li>
 
@@ -100,10 +100,10 @@
                     <h4 class="text-section">Compte</h4>
                 </li>
 
-                <li class="nav-item">
-                    <button type="button" class="btn btn-link text-light p-0 bg-danger fs-2 border rounded-3 ml-2" data-bs-toggle="modal" data-bs-target="#logoutConfirmationModal">
-                        <i class="icon-logout"></i>
-                        <span class="p-2">Se déconnecter</span>
+                 <li class="nav-item">
+                    <button type="button" class="btn btn-danger btn-lg d-flex align-items-center justify-content-center fw-semibold px-4 py-2 rounded-pill shadow-sm" data-bs-toggle="modal" data-bs-target="#logoutConfirmationModal">
+                        <i class="bi bi-box-arrow-right me-2 fs-5"></i>
+                        <span>Se déconnecter</span>
                     </button>
                 </li>
             </ul>

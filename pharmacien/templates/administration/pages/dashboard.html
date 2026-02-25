@@ -1,10 +1,11 @@
 {% extends 'administration/base.html' %}
 {% load static %}
 {% block content %}
+
 <!-- Mes styles personnalisés --->
 <style>
-   /*** Style appliqué au dashboard****/
-     .dashboard-title {
+  /*** Style appliqué au dashboard****/
+  .dashboard-title {
     font-size: 2.2rem;
     font-weight: bold;
     color: #0d6efd;
@@ -52,12 +53,36 @@
       margin-bottom: 20px;
     }
   }
+
+  @media print {
+    body * {
+      visibility: hidden;
+    }
+
+    .print-area, .print-area * {
+      visibility: visible;
+    }
+
+    .print-area {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+    }
+  }
 </style>
 
 <div class="page-inner">
 
-  <div class="dashboard-wrapper px-4">
+  <div class="dashboard-wrapper px-4 print-area">
     <h2 class="dashboard-title">Tableau de bord</h2>
+    <!-- Bouton d'impression -->
+    <div class="d-flex justify-content-end px-4">
+      <button class="btn btn-secondary mb-3" onclick="window.print()">
+        🖨️ Imprimer le tableau de bord
+      </button>
+    </div>
+    <!-- Zone à imprimer -->
 
     <div class="row dashboard-cards align-items-stretch">
 
@@ -106,4 +131,5 @@
     </div>
   </div>
 </div>
+
 {% endblock %}

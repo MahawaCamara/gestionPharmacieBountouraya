@@ -59,7 +59,7 @@ class PendingSensitiveChange(models.Model):
     is_confirmed = models.BooleanField(default=False)
 
     def is_expired(self):
-        return timezone.now() > self.created_at + timedelta(minutes=2)  # ⏰ valable 2 minutes
+        return timezone.now() > self.created_at + timedelta(minutes=10)  # ⏰ valable 2 minutes
 
     def __str__(self):
         return f"Changement en attente pour {self.user.username}"

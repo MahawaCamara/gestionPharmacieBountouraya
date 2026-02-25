@@ -1,0 +1,72 @@
+{% extends "administration/pages/base_login.html" %}
+{% block title %}Créer un compte{% endblock %}
+
+{% block content %}
+<style>
+  .fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeIn 0.8s ease-out forwards;
+  }
+
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+  <div class="card p-4 shadow-lg fade-in" style="width: 100%; max-width: 500px;">
+    <h2 class="text-center mb-4">Créer un compte</h2>
+
+    {% if messages %}
+      <div id="messages">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} fade-in">{{ message }}</div>
+        {% endfor %}
+      </div>
+      <script>
+        setTimeout(() => {
+          const msgBox = document.getElementById("messages");
+          if (msgBox) msgBox.style.display = "none";
+        }, 4000);
+      </script>
+    {% endif %}
+
+    <form method="POST" action="{% url 'pharmacien:signup' %}" class="fade-in">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="mb-3">
+          {{ field.label_tag }}
+          {{ field }}
+          {% if field.errors %}
+            <div class="text-danger small">{{ field.errors|striptags }}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <button type="submit" class="btn btn-success w-100 py-2 d-flex justify-content-center align-items-center" id="submit-btn">
+        <span id="btn-text">Créer mon compte</span>
+        <div id="spinner" class="spinner-border spinner-border-sm text-light d-none ms-2" role="status" aria-hidden="true"></div>
+      </button>
+    </form>
+
+    <div class="text-center mt-3">
+      <a href="{% url 'pharmacien:login' %}" class="text-decoration-none small">Déjà inscrit ? Se connecter</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  const form = document.querySelector('form');
+  const spinner = document.getElementById('spinner');
+  const btnText = document.getElementById('btn-text');
+
+  form.addEventListener('submit', function () {
+    spinner.classList.remove('d-none');
+    btnText.textContent = "Chargement...";
+  });
+</script>
+{% endblock %}

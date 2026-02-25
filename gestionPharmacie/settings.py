@@ -183,7 +183,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'mahawacamaracamara278@gmail.com'
 EMAIL_HOST_PASSWORD = 'tbuakiwhfqjdtann'
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = 'PharmaConnect <mahawacamaracamara278@gmail.com>'
 CONTACT_RECEIVER_EMAIL = 'pharmaconnect200@gmail.com'
 
 # --------------------------------------------------

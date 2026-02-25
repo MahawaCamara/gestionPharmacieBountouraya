@@ -13,7 +13,7 @@ urlpatterns = [
     path('blocked-users/export-excel/', views.export_pharmacies_excel, name='export_pharmacies_excel'),
     # Les urls du produit
     path("produits/", views.manage_products, name="manage_products"),
-    path('admin/produits/<int:id>/supprimer/', views.delete_product, name='delete_product'),
+    path('produits/<int:id>/supprimer/', views.delete_product, name='delete_product'),
     path('produits/export-excel/', views.export_products_excel, name='export_products_excel'),
     # Gestion des Formes Pharmaceutiques
     path("formes/", views.manage_forms, name="manage_forms"),  # Liste des formes

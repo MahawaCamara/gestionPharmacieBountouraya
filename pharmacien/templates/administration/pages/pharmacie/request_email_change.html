@@ -1,0 +1,12 @@
+{% extends 'administration/base.html' %}
+{% block content %}
+<div class="container mt-5" style="max-width: 500px;">
+    <h2 class="text-primary mb-4">Modifier mon adresse email</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.new_email.label_tag }}
+        {{ form.new_email }}
+        <button type="submit" class="btn btn-primary mt-3">Envoyer le lien de confirmation</button>
+    </form>
+</div>
+{% endblock %}

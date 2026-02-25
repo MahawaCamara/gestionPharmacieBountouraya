@@ -1,0 +1,56 @@
+{% extends "administration/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4">Toutes les Notifications</h2>
+
+    {% if notifications %}
+    <ul class="list-group" id="notificationsList">
+        {% for notification in notifications %}
+        <li class="list-group-item d-flex justify-content-between align-items-center {% if not notification.is_read %}list-group-item-primary fw-bold{% endif %}">
+            <div>
+                <h5 class="mb-1">{{ notification.message }}</h5>
+                <small class="text-muted">{{ notification.created_at|timesince }}</small>
+            </div>
+            {% if not notification.is_read %}
+            <button class="btn btn-sm btn-outline-success mark-notif-read-btn" data-notif-id="{{ notification.id }}">
+                Marquer comme lu
+            </button>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <div class="alert alert-info text-center">Vous n'avez aucune notification pour le moment.</div>
+    {% endif %}
+</div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.mark-notif-read-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const notifId = this.dataset.notifId;
+                const listItem = this.closest('li');
+                
+                fetch(`/pharmacien/notifications/mark_as_read/${notifId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    credentials: 'same-origin'
+                })
+                .then(response => {
+                    if (response.ok) {
+                        listItem.classList.remove('list-group-item-primary', 'fw-bold');
+                        this.remove();
+                    }
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

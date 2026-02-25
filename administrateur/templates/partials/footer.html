@@ -1,20 +1,25 @@
-<footer class="footer">
-  <div class="container-fluid d-flex justify-content-between">
-      <nav class="pull-left">
-          <ul class="nav">
-              <li class="nav-item">
-                  <a class="nav-link" href="#"> Licenses </a>
-              </li>
-          </ul>
-      </nav>
-      
-      <div class="copyright">
-          2024, made with <i class="fa fa-heart heart text-danger"></i> by
-          <a href="http://www.themekita.com">ThemeKita</a>
-      </div>
-      <div>
-          Distributed by
-          <a target="_blank" href="https://themewagon.com/">ThemeWagon</a>.
-      </div>
+<footer class="footer bg-light border-top py-3 mt-5">
+  <div class="container-fluid d-flex flex-column flex-md-row justify-content-between align-items-center">
+    
+    <div class="mb-2 mb-md-0 text-muted">
+      &copy; {{ now|date:"Y" }} - Interface Administrateur - Plateforme PharmaConnect
+    </div>
+    
+    <nav>
+      <ul class="nav">
+        <li class="nav-item">
+          <a class="nav-link text-muted" href="{% url 'administration:dashboard_admin' %}">
+            Tableau de bord
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-muted" href="#">Paramètres</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-muted" href="#">Support</a>
+        </li>
+      </ul>
+    </nav>
+    
   </div>
 </footer>
