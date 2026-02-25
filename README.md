@@ -43,4 +43,4 @@ Faciliter l’accès aux médicaments et améliorer la transparence des informat
 
 1. Cloner le projet :
 ```bash
-git clone https://github.com/TON-USERNAME/gestionPharmacieBountouraya.git
+git clone https://github.com/Mahawa Camara/gestionPharmacieBountouraya.git
